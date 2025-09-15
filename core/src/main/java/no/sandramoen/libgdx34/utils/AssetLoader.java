@@ -25,26 +25,16 @@ public class AssetLoader implements AssetErrorListener {
     public static String shockwaveShader;
     public static String backgroundShader;
 
-    public static Sound player_shoot_0_sound;
-    public static Array<Sound> cat_meow_sounds;
-    public static Sound ahSound;
-    public static Sound splashSound;
-    public static Sound heartBeatSound;
+    //public static Sound heartBeatSound;
 
     public static Array<Music> music;
-    public static Music levelMusic;
-    public static Music ambientMusic;
-    public static Music drinkingMusic;
-    public static Music radiationMusic;
-    public static Music catPurrMusic;
+    //public static Music levelMusic;
 
     static {
         long time = System.currentTimeMillis();
         no.sandramoen.libgdx34.utils.BaseGame.assetManager = new AssetManager();
         no.sandramoen.libgdx34.utils.BaseGame.assetManager. setLoader(Skin. class, new FWSkinLoader(BaseGame.assetManager. getFileHandleResolver()));
         BaseGame.assetManager.setErrorListener(new AssetLoader());
-
-        cat_meow_sounds = new Array<Sound>();
 
         loadAssets();
         BaseGame.assetManager.finishLoading();
@@ -71,19 +61,10 @@ public class AssetLoader implements AssetErrorListener {
         BaseGame.assetManager.load("images/included/packed/images.pack.atlas", TextureAtlas.class);
 
         // music
-        BaseGame.assetManager.load("audio/music/744138__thelastoneonearth__epic-middle-east-theme.ogg", Music.class);
-        BaseGame.assetManager.load("audio/music/457159__benbojangles__desert-binaural-wind.wav", Music.class);
-        BaseGame.assetManager.load("audio/music/201586__tjandrasounds__cat_drinking.wav", Music.class);
-        BaseGame.assetManager.load("audio/music/328381__leonelmail__radioactive-machine.mp3", Music.class);
+        //BaseGame.assetManager.load("audio/music/744138__thelastoneonearth__epic-middle-east-theme.ogg", Music.class);
 
         // sounds
         //BaseGame.assetManager.load("audio/sounds/player/Laser_Shoot48.wav", Sound.class);
-        for (int i = 0; i <= 6; i++)
-            BaseGame.assetManager.load("audio/sounds/cat/meow_" + i + ".mp3", Sound.class);
-        BaseGame.assetManager.load("audio/sounds/411199__kcjones321__sipping-and-ahh.wav", Sound.class);
-        BaseGame.assetManager.load("audio/sounds/532886__bricklover__water-splash-3.ogg", Sound.class);
-        BaseGame.assetManager.load("audio/sounds/386736__ken788__cat_purring.ogg", Music.class);
-        BaseGame.assetManager.load("audio/sounds/332812__loudernoises__heartbeat-140bpm.mp3", Sound.class);
 
         // i18n
 
@@ -109,21 +90,12 @@ public class AssetLoader implements AssetErrorListener {
         textureAtlas = BaseGame.assetManager.get("images/included/packed/images.pack.atlas");
 
         // music
-        music = new Array();
-        levelMusic = BaseGame.assetManager.get("audio/music/744138__thelastoneonearth__epic-middle-east-theme.ogg", Music.class);
-        ambientMusic = BaseGame.assetManager.get("audio/music/457159__benbojangles__desert-binaural-wind.wav", Music.class);
-        drinkingMusic = BaseGame.assetManager.get("audio/music/201586__tjandrasounds__cat_drinking.wav", Music.class);
-        radiationMusic = BaseGame.assetManager.get("audio/music/328381__leonelmail__radioactive-machine.mp3", Music.class);
-        music.add(levelMusic);
+        //music = new Array();
+        //levelMusic = BaseGame.assetManager.get("audio/music/744138__thelastoneonearth__epic-middle-east-theme.ogg", Music.class);
+        //music.add(levelMusic);
 
         // sounds
         //player_shoot_0_sound = BaseGame.assetManager.get("audio/sounds/player/Laser_Shoot48.wav", Sound.class);
-        for (int i = 0; i <= 6; i++)
-            cat_meow_sounds.add(BaseGame.assetManager.get("audio/sounds/cat/meow_" + i + ".mp3", Sound.class));
-        ahSound = BaseGame.assetManager.get("audio/sounds/411199__kcjones321__sipping-and-ahh.wav", Sound.class);
-        splashSound = BaseGame.assetManager.get("audio/sounds/532886__bricklover__water-splash-3.ogg", Sound.class);
-        catPurrMusic = BaseGame.assetManager.get("audio/sounds/386736__ken788__cat_purring.ogg", Music.class);
-        heartBeatSound = BaseGame.assetManager.get("audio/sounds/332812__loudernoises__heartbeat-140bpm.mp3", Sound.class);
 
         // i18n
 

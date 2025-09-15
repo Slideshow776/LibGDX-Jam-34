@@ -8,17 +8,14 @@ import no.sandramoen.libgdx34.utils.BaseGame;
 
 public class Background extends BaseActor {
 
-    public Background(float x, float y, Stage stage) {
-        super(x, y, stage);
+    public Background(Stage stage) {
+        super(0f, 0f, stage);
 
-        loadImage("gui/map");
-        setSize(BaseGame.WORLD_WIDTH, BaseGame.WORLD_HEIGHT);
-        setPosition(0, 0);
+        loadImage("whitePixel");
 
-        /*setSize(BaseGame.WORLD_WIDTH + 2, BaseGame.WORLD_HEIGHT + 2);
-        setPosition(-1, -1);*/
+        setSize(BaseGame.WORLD_WIDTH + 2, BaseGame.WORLD_HEIGHT + 2);
+        setPosition(-1, -1);
 
-        float colour = 0.8f;
-        setColor(new Color(colour, colour, colour, 1.0f));
+        setColor(new Color(0x264167FF));
     }
 }

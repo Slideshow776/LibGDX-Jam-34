@@ -84,7 +84,6 @@ public class BaseProgressBar extends BaseActor {
         if (is_warning)
             return;
 
-        AssetLoader.heartBeatSound.play(BaseGame.soundVolume, MathUtils.random(0.9f, 1.1f), 0f);
         is_warning = true;
         animation_strength = 0.25f;
         setColor(Color.RED);
