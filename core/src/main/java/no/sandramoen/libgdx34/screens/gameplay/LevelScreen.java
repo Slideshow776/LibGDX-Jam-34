@@ -62,9 +62,8 @@ public class LevelScreen extends BaseScreen {
 
                         for (int c = 0; c < row.size; c++) {
                             Cell cell = row.get(c);
-                            if (cell.letter.equalsIgnoreCase(String.valueOf(typed))) {
-                                guiRow.get(c).showError(); // flash the cell
-                            }
+                            if (cell.letter.equalsIgnoreCase(String.valueOf(typed)))
+                                guiRow.get(c).showError();
                         }
                     }
                 }
@@ -121,6 +120,8 @@ public class LevelScreen extends BaseScreen {
                 float y = startY - r * ((tempHeight * margin_y) + 3 * margin_y); // stagger vertically for hex
 
                 CellGUI cellGUI = new CellGUI(x, y, mainStage, cell.letter);
+                if (cell.is_player_here)
+                    cellGUI.is_player = false;
                 cellGUI.setPlayerHere(cell.is_player_here);
                 cellGUI.setGoalHere(cell.is_goal_here);
 
