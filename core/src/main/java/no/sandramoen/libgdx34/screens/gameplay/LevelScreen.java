@@ -20,6 +20,8 @@ public class LevelScreen extends BaseScreen {
     private GameBoard game_board;
     private Array<Array<CellGUI>> cell_guis;
 
+    private int win_count = 0;
+
 
     @Override
     public void initialize() {
@@ -52,8 +54,26 @@ public class LevelScreen extends BaseScreen {
         else {
             char typed = keycodeToChar(keycode);
             if (typed != 0) {
-                game_board.movePlayerIfMatch(typed);
-                updateGUI();
+                if (!game_board.movePlayerIfMatch(typed)) {
+                    // Find the CellGUI with the matching letter
+                    for (int r = 0; r < game_board.rows.size; r++) {
+                        Array<Cell> row = game_board.rows.get(r);
+                        Array<CellGUI> guiRow = cell_guis.get(r);
+
+                        for (int c = 0; c < row.size; c++) {
+                            Cell cell = row.get(c);
+                            if (cell.letter.equalsIgnoreCase(String.valueOf(typed))) {
+                                guiRow.get(c).showError(); // flash the cell
+                            }
+                        }
+                    }
+                }
+                boolean is_new_letters = false;
+                if (game_board.checkPlayerReachedGoalAndShuffle()) {
+                    win_count++;
+                    is_new_letters = true;
+                }
+                updateGUI(is_new_letters);
             }
         }
         return super.keyDown(keycode);
@@ -76,10 +96,11 @@ public class LevelScreen extends BaseScreen {
 
         cell_guis.clear();
 
-        float startX = BaseGame.WORLD_WIDTH / 2f - 5f;    // center horizontally
-        float startY = BaseGame.WORLD_HEIGHT - 2f - 1;   // start near top
+        float startX = BaseGame.WORLD_WIDTH / 2f - 6f;    // center horizontally
+        float startY = BaseGame.WORLD_HEIGHT - 2f - 2.25f;   // start near top
 
-        float margin = 0.5f; // space between cells in world units
+        float margin_x = 1.25f;
+        float margin_y = 0.5f;
 
         for (int r = 0; r < game_board.rows.size; r++) {
             Array<Cell> row = game_board.rows.get(r);
@@ -90,14 +111,14 @@ public class LevelScreen extends BaseScreen {
             float tempHeight = CellGUI.CELL_SIZE; // default height
 
             // Horizontal offset to center shorter rows
-            float rowOffset = (maxRowLength - row.size) * (tempWidth + margin) / 2f;
+            float rowOffset = (maxRowLength - row.size) * (tempWidth + margin_x) / 2f;
 
             for (int c = 0; c < row.size; c++) {
                 Cell cell = row.get(c);
 
                 // Add margin between cells
-                float x = startX + (c * (tempWidth + margin)) + rowOffset;
-                float y = startY - r * ((tempHeight * margin) + 3*margin); // stagger vertically for hex
+                float x = startX + (c * (tempWidth + margin_x)) + rowOffset;
+                float y = startY - r * ((tempHeight * margin_y) + 3 * margin_y); // stagger vertically for hex
 
                 CellGUI cellGUI = new CellGUI(x, y, mainStage, cell.letter);
                 cellGUI.setPlayerHere(cell.is_player_here);
@@ -111,7 +132,7 @@ public class LevelScreen extends BaseScreen {
     }
 
 
-    private void updateGUI() {
+    private void updateGUI(boolean is_new_letters) {
         for (int r = 0; r < game_board.rows.size; r++) {
             Array<Cell> row = game_board.rows.get(r);
             Array<CellGUI> guiRow = cell_guis.get(r);
@@ -120,18 +141,18 @@ public class LevelScreen extends BaseScreen {
                 Cell cell = row.get(c);
                 CellGUI gui = guiRow.get(c);
 
-                // Reset color
-                gui.setColor(1, 1, 1, 1);
-
                 // Highlight player or goal
                 if (cell.is_player_here) {
                     gui.setPlayerHere(true);
                 } else if (cell.is_goal_here) {
                     gui.setGoalHere(true);
+                } else {
+                    gui.setPlayerHere(false);
+                    gui.setGoalHere(false);
                 }
 
-                // Optionally, swap the image if letter changed
-                // gui.loadImage("alphabet/" + cell.letter.toLowerCase());
+                if (is_new_letters)
+                    gui.setLetter(cell.letter);
             }
         }
     }

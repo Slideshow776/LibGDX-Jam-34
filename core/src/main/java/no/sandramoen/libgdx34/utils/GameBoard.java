@@ -2,14 +2,13 @@ package no.sandramoen.libgdx34.utils;
 
 import com.badlogic.gdx.utils.Array;
 
-import java.util.Locale;
 import java.util.Random;
 
 public class GameBoard {
     public Array<Array<Cell>> rows;
     public int playerRow, playerCol;
 
-    private final boolean IS_PRINT = true;
+    private final boolean IS_PRINT = false;
     private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private Random random = new Random();
 
@@ -17,9 +16,103 @@ public class GameBoard {
     public GameBoard() {
         rows = new Array<>();
         generateGrid();
+        placePlayerAndGoalRandomly();
 
         if (IS_PRINT) {
             printBoard();
+        }
+    }
+
+
+    public boolean checkPlayerReachedGoalAndShuffle() {
+        Cell playerCell = rows.get(playerRow).get(playerCol);
+
+        if (playerCell.is_goal_here) {
+            // Remove old goal
+            playerCell.is_goal_here = false;
+
+            // Shuffle letters
+            shuffle();
+
+            // Place new goal randomly
+            placeRandomGoal();
+
+            return true; // goal was reached
+        }
+
+        return false; // goal not reached
+    }
+
+
+    private void placePlayerAndGoalRandomly() {
+        // 1️⃣ Clear previous player and goal
+        for (Array<Cell> row : rows) {
+            for (Cell cell : row) {
+                cell.is_player_here = false;
+                cell.is_goal_here = false;
+            }
+        }
+
+        // 2️⃣ Pick a random cell for the player and assign to class fields
+        this.playerRow = random.nextInt(rows.size);
+        this.playerCol = random.nextInt(rows.get(this.playerRow).size);
+        rows.get(this.playerRow).get(this.playerCol).is_player_here = true;
+
+        // 3️⃣ Pick a random neighbor for the goal
+        Array<int[]> neighbors = getNeighbors(this.playerRow, this.playerCol);
+        if (neighbors.size > 0) {
+            int[] goalPos = neighbors.get(random.nextInt(neighbors.size));
+            rows.get(goalPos[0]).get(goalPos[1]).is_goal_here = true;
+        } else {
+            // fallback
+            rows.get(this.playerRow).get(this.playerCol).is_goal_here = true;
+        }
+    }
+
+
+    private void placeRandomGoal() {
+        Array<int[]> emptyCells = new Array<>();
+
+        // Collect all cells that are not the player
+        for (int r = 0; r < rows.size; r++) {
+            for (int c = 0; c < rows.get(r).size; c++) {
+                Cell cell = rows.get(r).get(c);
+                if (!cell.is_player_here) {
+                    emptyCells.add(new int[]{r, c});
+                }
+            }
+        }
+
+        // Pick one at random
+        int[] goalPos = emptyCells.get(random.nextInt(emptyCells.size));
+        rows.get(goalPos[0]).get(goalPos[1]).is_goal_here = true;
+    }
+
+
+    public void shuffle() {
+        Array<String> letters = new Array<>();
+
+        // Collect letters from all cells
+        for (Array<Cell> row : rows) {
+            for (Cell cell : row) {
+                letters.add(cell.letter);
+            }
+        }
+
+        // Shuffle letters
+        for (int i = letters.size - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            String tmp = letters.get(i);
+            letters.set(i, letters.get(j));
+            letters.set(j, tmp);
+        }
+
+        // Reassign letters to cells
+        int index = 0;
+        for (Array<Cell> row : rows) {
+            for (Cell cell : row) {
+                cell.letter = letters.get(index++);
+            }
         }
     }
 
@@ -38,16 +131,6 @@ public class GameBoard {
             }
             rows.add(row);
         }
-
-        // Place player at start
-        playerRow = 0;
-        playerCol = 0;
-        rows.get(playerRow).get(playerCol).is_player_here = true;
-
-        // Place goal at bottom-right
-        int lastRow = rows.size - 1;
-        int lastCol = rows.get(lastRow).size - 1;
-        rows.get(lastRow).get(lastCol).is_goal_here = true;
     }
 
 
@@ -63,7 +146,7 @@ public class GameBoard {
     }
 
 
-    public void movePlayerIfMatch(char typedLetter) {
+    public boolean movePlayerIfMatch(char typedLetter) {
         for (int[] n : getNeighbors(playerRow, playerCol)) {
             Cell neighbor = rows.get(n[0]).get(n[1]);
             if (neighbor.letter.equalsIgnoreCase(String.valueOf(typedLetter))) {
@@ -77,9 +160,10 @@ public class GameBoard {
                     printBoard();
                     printNeighborsOfLetter(typedLetter);
                 }
-                return;
+                return true;
             }
         }
+        return false;
     }
 
 
