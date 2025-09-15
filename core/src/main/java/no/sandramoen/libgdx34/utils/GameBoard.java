@@ -101,7 +101,7 @@ public class GameBoard {
 
             int neighborRowSize = rows.get(nRow).size;
             // Column offset due to jagged row layout
-            int colOffset = (neighborRowSize - currentRowSize) / 2;
+            int colOffset = (neighborRowSize - currentRowSize - 1) / 2;
             int nCol = col + d[1] + colOffset;
 
             if (nCol < 0 || nCol >= neighborRowSize) continue;
