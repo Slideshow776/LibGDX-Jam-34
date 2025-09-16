@@ -152,8 +152,14 @@ public class LevelScreen extends BaseScreen {
                     gui.setGoalHere(false);
                 }
 
-                if (is_new_letters)
-                    gui.setLetter(cell.letter);
+                if (is_new_letters) {
+                    if (cell.is_goal_here)
+                        gui.setLetter(cell.letter, CellGUI.Font.BOWLBY);
+                    else if(cell.is_player_here)
+                        gui.setLetter(cell.letter, CellGUI.Font.METAL_MANIA);
+                    else
+                        gui.setLetter(cell.letter, CellGUI.Font.ALEGREYA);
+                }
             }
         }
     }
