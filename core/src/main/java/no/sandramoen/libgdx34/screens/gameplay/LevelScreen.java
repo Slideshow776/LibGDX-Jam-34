@@ -154,6 +154,10 @@ public class LevelScreen extends BaseScreen {
                             //cell_gui.markDangerous(true);
                             if (cell_gui.is_player) {
                                 set_game_over();
+                                cell_gui.addAction(Actions.parallel(
+                                    Actions.scaleTo(20f, 20f, 0.25f),
+                                    Actions.fadeOut(0.25f)
+                                ));
                             }
                         }
                     }
@@ -168,45 +172,59 @@ public class LevelScreen extends BaseScreen {
         is_game_over = true;
         time = 0f;
 
-        // First hide all cells
+        // Fade all cells out (but keep their actions like wobble)
         for (Array<CellGUI> row : cell_guis) {
             for (CellGUI cell_gui : row) {
-                cell_gui.setVisible(false);
+                cell_gui.setVisible(true);
+                cell_gui.addAction(Actions.sequence(
+                    //Actions.delay(0.25f),
+                    Actions.fadeIn(0.25f),
+                    Actions.scaleTo(1f, 1f, 0f),
+                Actions.fadeOut(0.5f)
+                ));
             }
         }
 
-        // Row indices to display text (ensure your board has at least 3 rows)
         int row1Index = 1;
         int row2Index = 2;
 
         String textRow1 = "GAME";
         String textRow2 = "OVER!";
 
-        // Show "GAME" on row 1, centered
+        // Fade in row 1 text
         if (row1Index < cell_guis.size) {
             Array<CellGUI> row1 = cell_guis.get(row1Index);
-
             int startIndex = (row1.size - textRow1.length()) / 2;
+
             for (int i = 0; i < textRow1.length() && startIndex + i < row1.size; i++) {
                 CellGUI cell_gui = row1.get(startIndex + i);
-                cell_gui.setVisible(true);
-                cell_gui.setLetter(String.valueOf(textRow1.charAt(i)), CellGUI.Font.BOWLBY);
+                int finalI = i;
+                cell_gui.addAction(Actions.sequence(
+                    Actions.delay(1f),
+                    Actions.run(() -> cell_gui.setLetter(String.valueOf(textRow1.charAt(finalI)), CellGUI.Font.METAL_MANIA)),
+                    Actions.delay(i * 0.25f),  // staggered effect
+                    Actions.alpha(1f, 0.3f)  // fade in smoothly
+                ));
             }
         }
 
-        // Show "OVER!" on row 2, centered
+        // Fade in row 2 text
         if (row2Index < cell_guis.size) {
             Array<CellGUI> row2 = cell_guis.get(row2Index);
-
             int startIndex = (row2.size - textRow2.length()) / 2;
+
             for (int i = 0; i < textRow2.length() && startIndex + i < row2.size; i++) {
                 CellGUI cell_gui = row2.get(startIndex + i);
-                cell_gui.setVisible(true);
-                cell_gui.setLetter(String.valueOf(textRow2.charAt(i)), CellGUI.Font.METAL_MANIA);
+                int finalI = i;
+                cell_gui.addAction(Actions.sequence(
+                    Actions.delay(1f),
+                    Actions.run(() -> cell_gui.setLetter(String.valueOf(textRow2.charAt(finalI)), CellGUI.Font.METAL_MANIA)),
+                    Actions.delay((i * 0.1f) + 0.4f), // row 2 comes after row 1
+                    Actions.alpha(1f, 0.3f)
+                ));
             }
         }
     }
-
 
 
     private void restart() {

@@ -33,6 +33,11 @@ public class CellGUI extends BaseActor {
 
         setBoundaryPolygon(8, 0.5f);
         setDebug(false);
+
+        addAction(Actions.sequence(
+            Actions.scaleTo(0f, 0f, 0f),
+            Actions.scaleTo(1f, 1f, MathUtils.random(0.1f, 1.0f))
+        ));
     }
 
 
@@ -53,7 +58,7 @@ public class CellGUI extends BaseActor {
 
     public void markDangerous(boolean is_dangerous) {
         this.is_dangerous = is_dangerous;
-        setVisible(!is_dangerous);
+        //setVisible(!is_dangerous);
     }
 
 
