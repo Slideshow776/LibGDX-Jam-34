@@ -1,5 +1,6 @@
 package no.sandramoen.libgdx34.actors;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,23 +14,24 @@ public class CellGUI extends BaseActor {
     public static final float CELL_SIZE = 1.4f;
 
     public boolean is_player = true;
+    public enum Font {BOWLBY, METAL_MANIA, ALEGREYA}
 
     public boolean is_declared_goal = false;
     private SequenceAction wobbleAction; // reference to the current wobble
+    private String letter;
 
 
     public CellGUI(float x, float y, Stage stage, String letter) {
         super(x, y, stage);
-        setLetter(letter);
+        setLetter(letter, Font.ALEGREYA);
     }
 
 
-    public void setLetter(String letter) {
+    public void setLetter(String letter, Font font) {
         if (letter == null) return;
 
-        loadImage("alphabet/" + letter.toLowerCase());
-        setSize(CELL_SIZE, CELL_SIZE);
-        setOrigin(Align.center);
+        this.letter = letter;
+        setFont(font);
 
         float scaleAmount = 1.05f;
         float scaleDuration = 0.25f;
@@ -37,6 +39,19 @@ public class CellGUI extends BaseActor {
             Actions.scaleTo(scaleAmount, scaleAmount, scaleDuration / 2),
             Actions.scaleTo(1f, 1f, scaleDuration / 2)
         ));
+    }
+
+
+    private void setFont(Font font) {
+        if (font == Font.METAL_MANIA)
+            loadImage("fonts/metal mania/" + letter.toLowerCase());
+        else if (font == Font.ALEGREYA)
+            loadImage("fonts/alegreya/" + letter.toLowerCase());
+        else if (font == Font.BOWLBY)
+            loadImage("fonts/bowlby/" + letter.toLowerCase());
+
+        setSize(CELL_SIZE, CELL_SIZE);
+        setOrigin(Align.center);
     }
 
 
@@ -55,9 +70,10 @@ public class CellGUI extends BaseActor {
         if (isPlayer) {
             if (!is_player) {
                 is_player = true;
+                setFont(Font.METAL_MANIA);
                 clearActions();
-                clearWobble(); // remove current wobble only
-                setColor(1, 1, 0, 1); // yellow for player
+                clearWobble();
+                setColor(Color.FOREST);
                 wobbleAction = createPlayerWobble();
                 addAction(wobbleAction);
 
@@ -71,8 +87,9 @@ public class CellGUI extends BaseActor {
         } else {
             if (is_player) {
                 is_player = false;
-                setColor(1, 1, 1, 1); // white
-                clearWobble(); // remove current wobble only
+                setFont(Font.ALEGREYA);
+                setColor(Color.BLACK);
+                clearWobble();
                 wobbleAction = createDefaultWobble();
                 addAction(wobbleAction);
                 addAction(Actions.scaleTo(1f, 1f, 1.0f, Interpolation.swingOut));
@@ -83,14 +100,14 @@ public class CellGUI extends BaseActor {
 
     public void setGoalHere(boolean isGoal) {
         if (isGoal) {
-
             if (!is_declared_goal) {
-                setColor(0, 1, 0, 1); // green for goal
+                setFont(Font.BOWLBY);
+                setColor(Color.GOLDENROD);
                 clearWobble();
                 is_declared_goal = true;
                 addAction(
                     Actions.parallel(
-                        Actions.scaleBy(5f, 5f, 0.5f, Interpolation.elasticOut),
+                        Actions.scaleBy(2.5f, 2.5f, 0.5f, Interpolation.elasticOut),
                         Actions.sequence(
                             Actions.rotateBy(360f, 0.5f),
                             Actions.rotateTo(0f, 0.5f)
