@@ -101,6 +101,8 @@ public class LevelScreen extends BaseScreen {
         float margin_x = 1.25f;
         float margin_y = 0.5f;
 
+        boolean hasAssignedPlayer = false, hasAssignedGoal = false;
+
         for (int r = 0; r < game_board.rows.size; r++) {
             Array<Cell> row = game_board.rows.get(r);
             Array<CellGUI> guiRow = new Array<>();
@@ -120,10 +122,20 @@ public class LevelScreen extends BaseScreen {
                 float y = startY - r * ((tempHeight * margin_y) + 3 * margin_y); // stagger vertically for hex
 
                 CellGUI cellGUI = new CellGUI(x, y, mainStage, cell.letter);
-                if (cell.is_player_here)
+                if (cell.is_player_here && !hasAssignedPlayer) {
                     cellGUI.is_player = false;
-                cellGUI.setPlayerHere(cell.is_player_here);
-                cellGUI.setGoalHere(cell.is_goal_here);
+                    cellGUI.setPlayerHere(true);
+                    hasAssignedPlayer = true;
+                } else {
+                    cellGUI.setPlayerHere(false);
+                }
+
+                if(cell.is_goal_here && !hasAssignedGoal){
+                    cellGUI.setGoalHere(true);
+                    hasAssignedGoal = true;
+                } else {
+                    cellGUI.setGoalHere(false);
+                }
 
                 guiRow.add(cellGUI);
             }

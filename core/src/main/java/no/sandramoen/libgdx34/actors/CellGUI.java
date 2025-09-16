@@ -14,7 +14,7 @@ public class CellGUI extends BaseActor {
 
     public boolean is_player = true;
 
-    private boolean is_declared_goal = false;
+    public boolean is_declared_goal = false;
     private SequenceAction wobbleAction; // reference to the current wobble
 
 
