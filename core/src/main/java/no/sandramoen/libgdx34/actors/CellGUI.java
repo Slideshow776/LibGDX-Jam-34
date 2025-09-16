@@ -56,14 +56,15 @@ public class CellGUI extends BaseActor {
             if (!is_player) {
                 is_player = true;
                 clearActions();
-                setColor(1, 1, 0, 1); // yellow for player
                 clearWobble(); // remove current wobble only
+                setColor(1, 1, 0, 1); // yellow for player
                 wobbleAction = createPlayerWobble();
                 addAction(wobbleAction);
 
-                if (getScaleX() < 1.75) {
+                if (getScaleX() != 1.75f) {
                     float amount = 1.75f;
                     float duration = 0.5f;
+                    addAction(Actions.scaleTo(0f, 0f, 0f));
                     addAction(Actions.scaleTo(amount, amount, duration, Interpolation.elasticOut));
                 }
             }
@@ -82,10 +83,10 @@ public class CellGUI extends BaseActor {
 
     public void setGoalHere(boolean isGoal) {
         if (isGoal) {
-            setColor(0, 1, 0, 1); // green for goal
-            clearWobble();
 
             if (!is_declared_goal) {
+                setColor(0, 1, 0, 1); // green for goal
+                clearWobble();
                 is_declared_goal = true;
                 addAction(
                     Actions.parallel(
