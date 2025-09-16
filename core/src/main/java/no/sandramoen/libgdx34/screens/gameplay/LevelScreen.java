@@ -2,11 +2,16 @@ package no.sandramoen.libgdx34.screens.gameplay;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 
 import no.sandramoen.libgdx34.actors.Background;
 import no.sandramoen.libgdx34.actors.CellGUI;
+import no.sandramoen.libgdx34.actors.Enemy;
 import no.sandramoen.libgdx34.actors.Overlay;
+import no.sandramoen.libgdx34.utils.AssetLoader;
 import no.sandramoen.libgdx34.utils.BaseActor;
 import no.sandramoen.libgdx34.utils.BaseGame;
 import no.sandramoen.libgdx34.utils.BaseScreen;
@@ -21,6 +26,16 @@ public class LevelScreen extends BaseScreen {
     private Array<Array<CellGUI>> cell_guis;
 
     private int win_count = 0;
+    private float time = 0f;
+    private boolean is_game_over = false;
+
+    private float enemy_spawn_counter = 0f;
+    private float enemy_spawn_frequency = 7f;
+    private float enemy_spawn_decrement = 1.0f;
+    private float enemy_speed = 10.0f;
+    private final float ENEMY_SPAWN_MIN_FREQUENCY = 1.75f;
+    private final float MAX_ENEMY_SPEED = 5f;
+
 
 
     @Override
@@ -41,7 +56,14 @@ public class LevelScreen extends BaseScreen {
 
 
     @Override
-    public void update(float _delta) {
+    public void update(float delta) {
+        time += delta;
+
+        if (is_game_over)
+            return;
+
+        handle_collision_detection();
+        handle_enemy_spawning(delta);
     }
 
 
@@ -49,8 +71,11 @@ public class LevelScreen extends BaseScreen {
     public boolean keyDown(int keycode) {
         if (keycode == Keys.ESCAPE)
             Gdx.app.exit();
-        else if (keycode == Keys.F1)
-            BaseGame.setActiveScreen(new LevelScreen());
+        else if (
+            (keycode == Keys.F1 || is_game_over) &&
+                time > 1.0f
+        )
+            restart();
         else {
             char typed = keycodeToChar(keycode);
             if (typed != 0) {
@@ -71,6 +96,7 @@ public class LevelScreen extends BaseScreen {
                 if (game_board.checkPlayerReachedGoalAndShuffle()) {
                     win_count++;
                     is_new_letters = true;
+                    AssetLoader.new_letters_sound.play(BaseGame.soundVolume * 0.25f);
                 }
                 updateGUI(is_new_letters);
             }
@@ -84,6 +110,107 @@ public class LevelScreen extends BaseScreen {
             return (char) ('A' + (keycode - Keys.A));
         }
         return 0;
+    }
+
+
+    private void handle_enemy_spawning(float delta) {
+        enemy_spawn_counter += delta;
+        if (enemy_spawn_counter >= enemy_spawn_frequency) {
+            Enemy enemy = new Enemy(mainStage, cell_guis);
+            enemy.speed = enemy_speed;
+            enemy_speed *= 0.9f;
+            if (enemy_speed < MAX_ENEMY_SPEED)
+                enemy_speed = MAX_ENEMY_SPEED;
+
+            enemy_spawn_counter = 0f;
+            enemy_spawn_frequency -= enemy_spawn_decrement;
+            if (enemy_spawn_frequency < ENEMY_SPAWN_MIN_FREQUENCY)
+                enemy_spawn_frequency = ENEMY_SPAWN_MIN_FREQUENCY;
+            enemy_spawn_decrement *= 1.05f;
+
+            //System.out.println("freq: " + enemy_spawn_frequency + ", speed: " + enemy_speed);
+        }
+    }
+
+
+    private void handle_collision_detection() {
+        for (Array<CellGUI> row : cell_guis) {
+            for (CellGUI cell_gui : row) {
+                cell_gui.markDangerous(false);
+            }
+        }
+
+        for (int i = 0; i < mainStage.getActors().size; i++) {
+            Actor actor = mainStage.getActors().get(i);
+            if (actor instanceof Enemy) {
+                Enemy enemy = (Enemy) actor;
+
+                for (int r = 0; r < cell_guis.size; r++) {
+                    Array<CellGUI> row = cell_guis.get(r);
+                    for (int c = 0; c < row.size; c++) {
+                        CellGUI cell_gui = row.get(c);
+
+                        if (enemy.overlaps(cell_gui)) {
+                            //cell_gui.markDangerous(true);
+                            if (cell_gui.is_player) {
+                                set_game_over();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    private void set_game_over() {
+        is_game_over = true;
+        time = 0f;
+
+        // First hide all cells
+        for (Array<CellGUI> row : cell_guis) {
+            for (CellGUI cell_gui : row) {
+                cell_gui.setVisible(false);
+            }
+        }
+
+        // Row indices to display text (ensure your board has at least 3 rows)
+        int row1Index = 1;
+        int row2Index = 2;
+
+        String textRow1 = "GAME";
+        String textRow2 = "OVER!";
+
+        // Show "GAME" on row 1, centered
+        if (row1Index < cell_guis.size) {
+            Array<CellGUI> row1 = cell_guis.get(row1Index);
+
+            int startIndex = (row1.size - textRow1.length()) / 2;
+            for (int i = 0; i < textRow1.length() && startIndex + i < row1.size; i++) {
+                CellGUI cell_gui = row1.get(startIndex + i);
+                cell_gui.setVisible(true);
+                cell_gui.setLetter(String.valueOf(textRow1.charAt(i)), CellGUI.Font.BOWLBY);
+            }
+        }
+
+        // Show "OVER!" on row 2, centered
+        if (row2Index < cell_guis.size) {
+            Array<CellGUI> row2 = cell_guis.get(row2Index);
+
+            int startIndex = (row2.size - textRow2.length()) / 2;
+            for (int i = 0; i < textRow2.length() && startIndex + i < row2.size; i++) {
+                CellGUI cell_gui = row2.get(startIndex + i);
+                cell_gui.setVisible(true);
+                cell_gui.setLetter(String.valueOf(textRow2.charAt(i)), CellGUI.Font.METAL_MANIA);
+            }
+        }
+    }
+
+
+
+    private void restart() {
+        BaseGame.setActiveScreen(new LevelScreen());
     }
 
 

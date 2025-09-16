@@ -25,7 +25,9 @@ public class AssetLoader implements AssetErrorListener {
     public static String shockwaveShader;
     public static String backgroundShader;
 
-    //public static Sound heartBeatSound;
+    public static Sound new_letters_sound;
+    public static Sound move_sound;
+    public static Sound error_sound;
 
     public static Array<Music> music;
     //public static Music levelMusic;
@@ -64,7 +66,9 @@ public class AssetLoader implements AssetErrorListener {
         //BaseGame.assetManager.load("audio/music/744138__thelastoneonearth__epic-middle-east-theme.ogg", Music.class);
 
         // sounds
-        //BaseGame.assetManager.load("audio/sounds/player/Laser_Shoot48.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/613290__birdofthenorth__bassy-thud.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/675771__craigsmith__s31-08-acetylene-torch-multiple-pops.wav", Sound.class);
 
         // i18n
 
@@ -95,7 +99,9 @@ public class AssetLoader implements AssetErrorListener {
         //music.add(levelMusic);
 
         // sounds
-        //player_shoot_0_sound = BaseGame.assetManager.get("audio/sounds/player/Laser_Shoot48.wav", Sound.class);
+        new_letters_sound = BaseGame.assetManager.get("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
+        move_sound = BaseGame.assetManager.get("audio/sounds/613290__birdofthenorth__bassy-thud.wav", Sound.class);
+        error_sound = BaseGame.assetManager.get("audio/sounds/675771__craigsmith__s31-08-acetylene-torch-multiple-pops.wav", Sound.class);
 
         // i18n
 

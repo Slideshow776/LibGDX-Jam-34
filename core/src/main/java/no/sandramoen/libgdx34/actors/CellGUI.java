@@ -8,12 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 
+import no.sandramoen.libgdx34.utils.AssetLoader;
 import no.sandramoen.libgdx34.utils.BaseActor;
+import no.sandramoen.libgdx34.utils.BaseGame;
 
 public class CellGUI extends BaseActor {
     public static final float CELL_SIZE = 1.4f;
 
     public boolean is_player = true;
+    public boolean is_dangerous = true;
     public enum Font {BOWLBY, METAL_MANIA, ALEGREYA}
 
     public boolean is_declared_goal = false;
@@ -27,6 +30,9 @@ public class CellGUI extends BaseActor {
     public CellGUI(float x, float y, Stage stage, String letter) {
         super(x, y, stage);
         setLetter(letter, Font.ALEGREYA);
+
+        setBoundaryPolygon(8, 0.5f);
+        setDebug(false);
     }
 
 
@@ -45,16 +51,9 @@ public class CellGUI extends BaseActor {
     }
 
 
-    private void setFont(Font font) {
-        if (font == Font.METAL_MANIA)
-            loadImage("fonts/metal mania/" + letter.toLowerCase());
-        else if (font == Font.ALEGREYA)
-            loadImage("fonts/alegreya/" + letter.toLowerCase());
-        else if (font == Font.BOWLBY)
-            loadImage("fonts/bowlby/" + letter.toLowerCase());
-
-        setSize(CELL_SIZE, CELL_SIZE);
-        setOrigin(Align.center);
+    public void markDangerous(boolean is_dangerous) {
+        this.is_dangerous = is_dangerous;
+        setVisible(!is_dangerous);
     }
 
 
@@ -66,6 +65,7 @@ public class CellGUI extends BaseActor {
             Actions.moveBy(2 * amount, 0f, 2 * duration),
             Actions.moveBy(-amount, 0f, duration)
         ));
+        AssetLoader.error_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
     }
 
 
@@ -73,6 +73,7 @@ public class CellGUI extends BaseActor {
         if (isPlayer) {
             if (!is_player) {
                 is_player = true;
+                AssetLoader.move_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
                 setFont(Font.METAL_MANIA);
                 clearActions();
                 clearWobble();
@@ -121,6 +122,19 @@ public class CellGUI extends BaseActor {
         } else {
             is_declared_goal = false;
         }
+    }
+
+
+    private void setFont(Font font) {
+        if (font == Font.METAL_MANIA)
+            loadImage("fonts/metal mania/" + letter.toLowerCase());
+        else if (font == Font.ALEGREYA)
+            loadImage("fonts/alegreya/" + letter.toLowerCase());
+        else if (font == Font.BOWLBY)
+            loadImage("fonts/bowlby/" + letter.toLowerCase());
+
+        setSize(CELL_SIZE, CELL_SIZE);
+        setOrigin(Align.center);
     }
 
 
