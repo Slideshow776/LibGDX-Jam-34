@@ -19,6 +19,9 @@ public class CellGUI extends BaseActor {
     public boolean is_declared_goal = false;
     private SequenceAction wobbleAction; // reference to the current wobble
     private String letter;
+    private Color player_colour = Color.GREEN;
+    private Color goal_colour = Color.YELLOW;
+    private Color default_colour = Color.BLACK;
 
 
     public CellGUI(float x, float y, Stage stage, String letter) {
@@ -73,7 +76,7 @@ public class CellGUI extends BaseActor {
                 setFont(Font.METAL_MANIA);
                 clearActions();
                 clearWobble();
-                setColor(Color.FOREST);
+                setColor(player_colour);
                 wobbleAction = createPlayerWobble();
                 addAction(wobbleAction);
 
@@ -88,7 +91,7 @@ public class CellGUI extends BaseActor {
             if (is_player) {
                 is_player = false;
                 setFont(Font.ALEGREYA);
-                setColor(Color.BLACK);
+                setColor(default_colour);
                 clearWobble();
                 wobbleAction = createDefaultWobble();
                 addAction(wobbleAction);
@@ -102,7 +105,7 @@ public class CellGUI extends BaseActor {
         if (isGoal) {
             if (!is_declared_goal) {
                 setFont(Font.BOWLBY);
-                setColor(Color.GOLDENROD);
+                setColor(goal_colour);
                 clearWobble();
                 is_declared_goal = true;
                 addAction(

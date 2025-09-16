@@ -16,7 +16,7 @@ public class Background extends BaseActor {
         setSize(BaseGame.WORLD_WIDTH + 2, BaseGame.WORLD_HEIGHT + 2);
         setPosition(-1, -1);
 
-        setColor(new Color(0x264167FF));
-        //setColor(new Color(0x4d6c99FF));
+        //setColor(new Color(0x264167FF));
+        setColor(new Color(0x789accFF));
     }
 }
