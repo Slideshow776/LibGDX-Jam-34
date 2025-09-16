@@ -77,6 +77,8 @@ public class GameBoard {
         for (int r = 0; r < rows.size; r++) {
             for (int c = 0; c < rows.get(r).size; c++) {
                 Cell cell = rows.get(r).get(c);
+                // TEtt: I think the goals weren't always getting cleared before.
+                cell.is_goal_here = false;
                 if (!cell.is_player_here) {
                     emptyCells.add(new int[]{r, c});
                 }

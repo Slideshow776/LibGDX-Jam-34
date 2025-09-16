@@ -122,20 +122,15 @@ public class LevelScreen extends BaseScreen {
                 float y = startY - r * ((tempHeight * margin_y) + 3 * margin_y); // stagger vertically for hex
 
                 CellGUI cellGUI = new CellGUI(x, y, mainStage, cell.letter);
-                if (cell.is_player_here && !hasAssignedPlayer) {
+                if (cell.is_player_here) {
                     cellGUI.is_player = false;
                     cellGUI.setPlayerHere(true);
-                    hasAssignedPlayer = true;
+                    cellGUI.setGoalHere(false);
                 } else {
                     cellGUI.setPlayerHere(false);
+                    cellGUI.setGoalHere(cell.is_goal_here);
                 }
 
-                if(cell.is_goal_here && !hasAssignedGoal){
-                    cellGUI.setGoalHere(true);
-                    hasAssignedGoal = true;
-                } else {
-                    cellGUI.setGoalHere(false);
-                }
 
                 guiRow.add(cellGUI);
             }
