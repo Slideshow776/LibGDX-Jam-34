@@ -21,6 +21,7 @@ public class CellGUI extends BaseActor {
 
     public boolean is_player = true;
     public boolean is_dangerous = true;
+    public boolean is_key = false;
     public enum Font {BOWLBY, METAL_MANIA, ALEGREYA}
 
     public boolean is_declared_goal = false;
@@ -52,6 +53,8 @@ public class CellGUI extends BaseActor {
         super.act(delta);
         if (is_declared_goal)
             backgroundRegion = AssetLoader.textureAtlas.findRegion("door");
+        else if(is_key)
+            backgroundRegion = AssetLoader.textureAtlas.findRegion("key");
         else
             backgroundRegion = AssetLoader.textureAtlas.findRegion("emptyPixel");
     }
@@ -112,6 +115,7 @@ public class CellGUI extends BaseActor {
     public void setPlayerHere(boolean isPlayer) {
         if (isPlayer) {
             if (!is_player) {
+                is_key = false;
                 is_player = true;
                 is_declared_goal = false;
                 AssetLoader.move_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
@@ -146,10 +150,12 @@ public class CellGUI extends BaseActor {
     public void setGoalHere(boolean isGoal) {
         if (isGoal) {
             if (!is_declared_goal) {
+                is_key = false;
+                is_player = false;
+                is_declared_goal = true;
                 setFont(Font.BOWLBY);
                 setColor(goal_colour);
                 clearWobble();
-                is_declared_goal = true;
                 addAction(
                     Actions.parallel(
                         Actions.scaleBy(2.5f, 2.5f, 0.5f, Interpolation.elasticOut),
@@ -162,6 +168,16 @@ public class CellGUI extends BaseActor {
             }
         } else {
             is_declared_goal = false;
+        }
+    }
+
+
+    public void setKeyHere(boolean isKey) {
+        if (isKey) {
+            is_key = true;
+            is_player = false;
+        } else {
+            is_key = false;
         }
     }
 

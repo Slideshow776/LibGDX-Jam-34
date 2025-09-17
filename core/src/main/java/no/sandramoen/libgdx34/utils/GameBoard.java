@@ -17,6 +17,7 @@ public class GameBoard {
         rows = new Array<>();
         generateGrid();
         placePlayerAndGoalRandomly();
+        placeRandomKey();
 
         if (IS_PRINT) {
             printBoard();
@@ -44,6 +45,17 @@ public class GameBoard {
     }
 
 
+    public boolean checkIfKey() {
+        Cell playerCell = rows.get(playerRow).get(playerCol);
+        if (playerCell.is_key_here) {
+            playerCell.is_key_here = false;
+            return true;
+        }
+
+        return false;
+    }
+
+
     private void placePlayerAndGoalRandomly() {
         // 1️⃣ Clear previous player and goal
         for (Array<Cell> row : rows) {
@@ -66,6 +78,26 @@ public class GameBoard {
         } else {
             // fallback
             rows.get(this.playerRow).get(this.playerCol).is_goal_here = true;
+        }
+    }
+
+
+    public void placeRandomKey() {
+        Array<int[]> emptyCells = new Array<>();
+
+        for (int r = 0; r < rows.size; r++) {
+            for (int c = 0; c < rows.get(r).size; c++) {
+                Cell cell = rows.get(r).get(c);
+                cell.is_key_here = false; // clear old key
+                if (!cell.is_player_here && !cell.is_goal_here) {
+                    emptyCells.add(new int[]{r, c});
+                }
+            }
+        }
+
+        if (emptyCells.size > 0) {
+            int[] keyPos = emptyCells.get(random.nextInt(emptyCells.size));
+            rows.get(keyPos[0]).get(keyPos[1]).is_key_here = true;
         }
     }
 
@@ -148,10 +180,16 @@ public class GameBoard {
     }
 
 
-    public boolean movePlayerIfMatch(char typedLetter) {
+    public boolean movePlayerIfMatch(char typedLetter, boolean hasKey) {
         for (int[] n : getNeighbors(playerRow, playerCol)) {
             Cell neighbor = rows.get(n[0]).get(n[1]);
             if (neighbor.letter.equalsIgnoreCase(String.valueOf(typedLetter))) {
+
+                // 🚪 Prevent moving onto goal if it's locked
+                if (neighbor.is_goal_here && !hasKey) {
+                    return false; // block movement until key is collected
+                }
+
                 // Move player
                 rows.get(playerRow).get(playerCol).is_player_here = false;
                 playerRow = n[0];
@@ -167,6 +205,7 @@ public class GameBoard {
         }
         return false;
     }
+
 
 
     public Array<int[]> getNeighbors(int row, int col) {
@@ -233,6 +272,7 @@ public class GameBoard {
 
                 if (cell.is_player_here) symbol = symbol.toLowerCase(); // player
                 else if (cell.is_goal_here) symbol = symbol.toLowerCase(); // goal
+                else if (cell.is_key_here) symbol = symbol.toLowerCase(); // goal
 
                 rowBuilder.append(symbol);
                 if (c < row.size - 1) rowBuilder.append("-");

@@ -29,6 +29,7 @@ public class LevelScreen extends BaseScreen {
     private float time = 0f;
     private boolean is_game_over = false;
     private boolean is_game_started = false;
+    private boolean has_current_key = false;
 
     private float enemy_spawn_counter = 0f;
     private float enemy_spawn_decrement = 1.0f;
@@ -79,7 +80,7 @@ public class LevelScreen extends BaseScreen {
         else {
             char typed = keycodeToChar(keycode);
             if (typed != 0) {
-                if (!game_board.movePlayerIfMatch(typed)) { // wrong letter was typed
+                if (!game_board.movePlayerIfMatch(typed, has_current_key)) { // wrong letter was typed
                     for (int r = 0; r < game_board.rows.size; r++) {
                         Array<Cell> row = game_board.rows.get(r);
                         Array<CellGUI> guiRow = cell_guis.get(r);
@@ -91,13 +92,21 @@ public class LevelScreen extends BaseScreen {
                         }
                     }
                 } else { // correct letter was typed
-                    boolean is_new_letters = false;
                     if (!is_game_started)
                         AssetLoader.game_start_sound.play(BaseGame.soundVolume);
                     is_game_started = true;
-                    if (game_board.checkPlayerReachedGoalAndShuffle()) {
+
+                    if (game_board.checkIfKey()) {
+                        has_current_key = true;
+                        AssetLoader.key_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
+                    }
+
+                    boolean is_new_letters = false;
+                    if (game_board.checkPlayerReachedGoalAndShuffle() && has_current_key) {
                         win_count++;
                         is_new_letters = true;
+                        game_board.placeRandomKey();
+                        has_current_key = false;
                         AssetLoader.new_letters_sound.play(BaseGame.soundVolume * 0.25f);
                     }
                     updateGUI(is_new_letters);
@@ -174,7 +183,9 @@ public class LevelScreen extends BaseScreen {
     private void set_game_over() {
         is_game_over = true;
         is_game_started = false;
+        has_current_key = false;
         time = 0f;
+
         AssetLoader.game_over_sound.play(BaseGame.soundVolume);
 
         // Fade all cells out (but keep their actions like wobble)
@@ -251,8 +262,6 @@ public class LevelScreen extends BaseScreen {
         float margin_x = 1.25f;
         float margin_y = 0.5f;
 
-        boolean hasAssignedPlayer = false, hasAssignedGoal = false;
-
         for (int r = 0; r < game_board.rows.size; r++) {
             Array<Cell> row = game_board.rows.get(r);
             Array<CellGUI> guiRow = new Array<>();
@@ -273,12 +282,14 @@ public class LevelScreen extends BaseScreen {
 
                 CellGUI cellGUI = new CellGUI(x, y, mainStage, cell.letter);
                 if (cell.is_player_here) {
-                    cellGUI.is_player = false;
+                    cellGUI.is_player = false; // HACK: needs to be false to work, actually means true
                     cellGUI.setPlayerHere(true);
-                    cellGUI.setGoalHere(false);
+                } else if (cell.is_goal_here) {
+                    cellGUI.setGoalHere(true);
+                } else if(cell.is_key_here) {
+                    cellGUI.setKeyHere(true);
                 } else {
                     cellGUI.setPlayerHere(false);
-                    cellGUI.setGoalHere(cell.is_goal_here);
                 }
 
 
@@ -304,9 +315,12 @@ public class LevelScreen extends BaseScreen {
                     gui.setPlayerHere(true);
                 } else if (cell.is_goal_here) {
                     gui.setGoalHere(true);
+                } else if (cell.is_key_here) {
+                    gui.setKeyHere(true);
                 } else {
                     gui.setPlayerHere(false);
                     gui.setGoalHere(false);
+                    gui.setKeyHere(false);
                 }
 
                 if (is_new_letters) {

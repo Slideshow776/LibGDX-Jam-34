@@ -30,6 +30,7 @@ public class AssetLoader implements AssetErrorListener {
     public static Sound error_sound;
     public static Sound game_over_sound;
     public static Sound game_start_sound;
+    public static Sound key_sound;
 
     public static Array<Music> music;
     //public static Music levelMusic;
@@ -73,6 +74,7 @@ public class AssetLoader implements AssetErrorListener {
         BaseGame.assetManager.load("audio/sounds/675771__craigsmith__s31-08-acetylene-torch-multiple-pops.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/615457__melokacool__game-over-3.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/669792__melokacool__alarm-1.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/634948__discordantscraps__keychain.wav", Sound.class);
 
         // i18n
 
@@ -108,6 +110,7 @@ public class AssetLoader implements AssetErrorListener {
         error_sound = BaseGame.assetManager.get("audio/sounds/675771__craigsmith__s31-08-acetylene-torch-multiple-pops.wav", Sound.class);
         game_over_sound = BaseGame.assetManager.get("audio/sounds/615457__melokacool__game-over-3.wav", Sound.class);
         game_start_sound = BaseGame.assetManager.get("audio/sounds/669792__melokacool__alarm-1.wav", Sound.class);
+        key_sound = BaseGame.assetManager.get("audio/sounds/634948__discordantscraps__keychain.wav", Sound.class);
 
         // i18n
 
