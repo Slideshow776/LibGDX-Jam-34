@@ -27,6 +27,7 @@ public class CellGUI extends BaseActor {
     public boolean is_declared_goal = false;
     private SequenceAction wobbleAction; // reference to the current wobble
     private String letter;
+    private Color key_colour = Color.WHITE;
     private Color player_colour = Color.GREEN;
     private Color goal_colour = Color.YELLOW;
     private Color default_colour = Color.BLACK;
@@ -64,7 +65,8 @@ public class CellGUI extends BaseActor {
     public void draw(Batch batch, float parentAlpha) {
         // Draw background first
         if (backgroundRegion != null) {
-            batch.setColor(new Color(1f, 1f, 1f, 1f));
+            key_colour.a = 1f;
+            batch.setColor(key_colour);
             batch.draw(
                 backgroundRegion,
                 getX(), getY(),
@@ -173,10 +175,11 @@ public class CellGUI extends BaseActor {
     }
 
 
-    public void setKeyHere(boolean isKey) {
+    public void setKeyHere(boolean isKey, Color key_colour) {
         if (isKey) {
             is_key = true;
             is_player = false;
+            this.key_colour = key_colour;
         } else {
             is_key = false;
         }

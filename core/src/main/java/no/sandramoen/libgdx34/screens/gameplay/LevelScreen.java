@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.github.tommyettinger.textra.TextraLabel;
@@ -37,6 +38,7 @@ public class LevelScreen extends BaseScreen {
     private int key_count = 0;
     private final int NUM_KEYS_TO_GET = 7;
     private boolean has_current_key = false;
+    private Array<Color> key_colours;
 
     private float enemy_spawn_counter = 0f;
     private float enemy_spawn_decrement = 1.0f;
@@ -46,6 +48,8 @@ public class LevelScreen extends BaseScreen {
     private final float MAX_ENEMY_SPEED = 5f;
 
     private Array<Image> key_images;
+    private TextraLabel score_label;
+    private TextraLabel high_score_label;
 
 
     @Override
@@ -117,6 +121,8 @@ public class LevelScreen extends BaseScreen {
                         game_board.placeRandomKey();
                         has_current_key = false;
                         AssetLoader.new_letters_sound.play(BaseGame.soundVolume * 0.25f);
+                        if (key_count >= NUM_KEYS_TO_GET)
+                            set_win();
                     }
                     updateGUI(is_new_letters);
                 }
@@ -191,11 +197,6 @@ public class LevelScreen extends BaseScreen {
 
     private void set_game_over() {
         is_game_over = true;
-        is_game_started = false;
-        has_current_key = false;
-        time = 0f;
-        key_count = 0;
-
         AssetLoader.game_over_sound.play(BaseGame.soundVolume);
 
         // Fade all cells out (but keep their actions like wobble)
@@ -253,7 +254,71 @@ public class LevelScreen extends BaseScreen {
     }
 
 
+    private void set_win() {
+        is_game_over = true;
+        AssetLoader.game_over_sound.play(BaseGame.soundVolume);
+
+        // Fade all cells out (but keep their actions like wobble)
+        for (Array<CellGUI> row : cell_guis) {
+            for (CellGUI cell_gui : row) {
+                cell_gui.setVisible(true);
+                cell_gui.addAction(Actions.sequence(
+                    //Actions.delay(0.25f),
+                    Actions.fadeIn(0.25f),
+                    Actions.scaleTo(1f, 1f, 0f),
+                    Actions.fadeOut(0.5f)
+                ));
+            }
+        }
+
+        int row1Index = 1;
+        int row2Index = 2;
+
+        String textRow1 = "YOU";
+        String textRow2 = "WON!";
+
+        // Fade in row 1 text
+        if (row1Index < cell_guis.size) {
+            Array<CellGUI> row1 = cell_guis.get(row1Index);
+            int startIndex = (row1.size - textRow1.length()) / 2;
+
+            for (int i = 0; i < textRow1.length() && startIndex + i < row1.size; i++) {
+                CellGUI cell_gui = row1.get(startIndex + i);
+                int finalI = i;
+                cell_gui.addAction(Actions.sequence(
+                    Actions.delay(1f),
+                    Actions.run(() -> cell_gui.setLetter(String.valueOf(textRow1.charAt(finalI)), CellGUI.Font.METAL_MANIA)),
+                    Actions.delay(i * 0.25f),  // staggered effect
+                    Actions.alpha(1f, 0.3f)  // fade in smoothly
+                ));
+            }
+        }
+
+        // Fade in row 2 text
+        if (row2Index < cell_guis.size) {
+            Array<CellGUI> row2 = cell_guis.get(row2Index);
+            int startIndex = (row2.size - textRow2.length()) / 2;
+
+            for (int i = 0; i < textRow2.length() && startIndex + i < row2.size; i++) {
+                CellGUI cell_gui = row2.get(startIndex + i);
+                int finalI = i;
+                cell_gui.addAction(Actions.sequence(
+                    Actions.delay(1f),
+                    Actions.run(() -> cell_gui.setLetter(String.valueOf(textRow2.charAt(finalI)), CellGUI.Font.METAL_MANIA)),
+                    Actions.delay((i * 0.1f) + 0.4f), // row 2 comes after row 1
+                    Actions.alpha(1f, 0.3f)
+                ));
+            }
+        }
+    }
+
+
     private void restart() {
+        is_game_started = false;
+        has_current_key = false;
+        time = 0f;
+        key_count = 0;
+
         BaseGame.setActiveScreen(new LevelScreen());
     }
 
@@ -297,7 +362,7 @@ public class LevelScreen extends BaseScreen {
                 } else if (cell.is_goal_here) {
                     cellGUI.setGoalHere(true);
                 } else if(cell.is_key_here) {
-                    cellGUI.setKeyHere(true);
+                    cellGUI.setKeyHere(true, key_colours.get(key_count));
                 } else {
                     cellGUI.setPlayerHere(false);
                 }
@@ -326,11 +391,11 @@ public class LevelScreen extends BaseScreen {
                 } else if (cell.is_goal_here) {
                     gui.setGoalHere(true);
                 } else if (cell.is_key_here) {
-                    gui.setKeyHere(true);
+                    gui.setKeyHere(true, key_colours.get(key_count));
                 } else {
                     gui.setPlayerHere(false);
                     gui.setGoalHere(false);
-                    gui.setKeyHere(false);
+                    gui.setKeyHere(false, key_colours.get(key_count));
                 }
 
                 if (is_new_letters) {
@@ -347,33 +412,78 @@ public class LevelScreen extends BaseScreen {
 
 
     private void initialize_gui() {
-        /*TextraLabel scoreLabel = new TextraLabel("banana phone", AssetLoader.getLabelStyle("Play-Bold59white"));
-        scoreLabel.setAlignment(Align.center);*/
+        // resources setup
+        float label_scale = 0.5f;
+        Image score_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
+        score_label = new TextraLabel("banana", AssetLoader.getLabelStyle("Play-Bold20white"));
+        score_label.getFont().scale(label_scale);
+        score_label.setColor(Color.BLACK);
+        score_label.setAlignment(Align.center);
 
+        Image high_score_image = new Image(AssetLoader.textureAtlas.findRegion("crown"));
+        high_score_label = new TextraLabel("apples", AssetLoader.getLabelStyle("Play-Bold20white"));
+        high_score_label.getFont().scale(label_scale);
+        high_score_label.setColor(Color.BLACK);
+        high_score_label.setAlignment(Align.center);
+
+        key_colours = new Array<>();
+        key_colours.add(new Color(0xE4030333)); // red
+        key_colours.add(new Color(0xFF8C0033)); // orange
+        key_colours.add(new Color(0xFFED0033)); // yellow
+        key_colours.add(new Color(0x00802633)); // green
+        key_colours.add(new Color(0x00D3FF33)); // light blue
+        key_colours.add(new Color(0x004CFF33)); // blue
+        key_colours.add(new Color(0x73298233)); // violet
+        key_colours.add(Color.WHITE); // hack
         key_images = new Array<>();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < NUM_KEYS_TO_GET - 1; i++) {
             Image image = new Image(AssetLoader.textureAtlas.findRegion("key"));
-            image.setColor(new Color(0f, 0f, 0f, 0.2f));
+            image.setColor(key_colours.get(i));
             key_images.add(image);
         }
 
+
+        // ui setup
         uiTable.defaults()
             .padTop(Gdx.graphics.getHeight() * .02f)
         ;
 
+        Table temp = new Table();
+
+        // score
+        temp.add(score_image)
+            .width(Gdx.graphics.getWidth() * 0.04f)
+            .height(Gdx.graphics.getHeight() * 0.04f)
+            .padRight(Gdx.graphics.getWidth() * 0.01f)
+        ;
+
+        temp.add(score_label)
+            .center()
+        ;
+
+        // keys
         for (Image key_image : key_images)
-            uiTable.add(key_image)
+            temp.add(key_image)
                 .width(Gdx.graphics.getWidth() * 0.075f)
                 .height(Gdx.graphics.getHeight() * 0.075f)
-                .expandY()
-                .top()
             ;
 
-        /*uiTable.add(scoreLabel).center()
-            .height(scoreLabel.getPrefHeight() * 1.5f)
-            .padTop(-Gdx.graphics.getHeight() * 0.005f)
-            .row()
-        ;*/
+        // high score
+        temp.add(high_score_image)
+            .width(Gdx.graphics.getWidth() * 0.04f)
+            .height(Gdx.graphics.getHeight() * 0.04f)
+            .padRight(Gdx.graphics.getWidth() * 0.01f)
+        ;
+
+        temp.add(high_score_label)
+            .center()
+            .height(high_score_label.getPrefHeight() * 1.5f)
+        ;
+
+        uiTable.add(temp)
+            .expandY()
+            .top()
+        ;
 
         //uiTable.setDebug(true);
     }
