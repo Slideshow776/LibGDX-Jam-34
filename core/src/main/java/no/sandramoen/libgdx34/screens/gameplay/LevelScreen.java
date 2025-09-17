@@ -31,6 +31,7 @@ public class LevelScreen extends BaseScreen {
     private Array<Array<CellGUI>> cell_guis;
 
     private float time = 0f;
+    private float game_time = 0f;
     private final float RESTART_DELAY_DURATION = 1.5f;
     private boolean is_game_over = false;
     private boolean is_game_started = false;
@@ -61,6 +62,12 @@ public class LevelScreen extends BaseScreen {
         initialize_gui();
         //GameUtils.playLoopingMusic(AssetLoader.levelMusic);
 
+        if (BaseGame.high_score <= 0) {
+            BaseGame.high_score = Integer.MAX_VALUE;
+        }
+        high_score_label.setText(BaseGame.high_score == Integer.MAX_VALUE ? "--" : BaseGame.high_score + "s");
+
+
         overlay = new Overlay(mainStage);
 
         game_board = new GameBoard();
@@ -75,6 +82,10 @@ public class LevelScreen extends BaseScreen {
 
         if (is_game_over || !is_game_started)
             return;
+
+        game_time += delta;
+
+        updateScoreLabel();
 
         handle_collision_detection();
         handle_enemy_spawning(delta);
@@ -195,6 +206,22 @@ public class LevelScreen extends BaseScreen {
     }
 
 
+    private void updateScoreLabel() {
+        int seconds = (int) game_time;
+        score_label.setText(seconds + "s");
+    }
+
+
+    private void updateHighScoreIfNeeded() {
+        int currentScore = (int) game_time;
+        if (currentScore < BaseGame.high_score) {
+            BaseGame.high_score = currentScore;
+            high_score_label.setText(BaseGame.high_score + "s");
+        }
+    }
+
+
+
     private void set_game_over() {
         is_game_over = true;
         AssetLoader.game_over_sound.play(BaseGame.soundVolume);
@@ -256,6 +283,7 @@ public class LevelScreen extends BaseScreen {
 
     private void set_win() {
         is_game_over = true;
+        updateHighScoreIfNeeded();
         AssetLoader.game_over_sound.play(BaseGame.soundVolume);
 
         // Fade all cells out (but keep their actions like wobble)
@@ -317,6 +345,7 @@ public class LevelScreen extends BaseScreen {
         is_game_started = false;
         has_current_key = false;
         time = 0f;
+        game_time = 0f;
         key_count = 0;
 
         BaseGame.setActiveScreen(new LevelScreen());
@@ -415,16 +444,17 @@ public class LevelScreen extends BaseScreen {
         // resources setup
         float label_scale = 0.5f;
         Image score_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
-        score_label = new TextraLabel("banana", AssetLoader.getLabelStyle("Play-Bold20white"));
+        score_label = new TextraLabel("0s", AssetLoader.getLabelStyle("Play-Bold20white"));
         score_label.getFont().scale(label_scale);
         score_label.setColor(Color.BLACK);
         score_label.setAlignment(Align.center);
 
         Image high_score_image = new Image(AssetLoader.textureAtlas.findRegion("crown"));
-        high_score_label = new TextraLabel("apples", AssetLoader.getLabelStyle("Play-Bold20white"));
+        high_score_label = new TextraLabel(BaseGame.high_score + "s", AssetLoader.getLabelStyle("Play-Bold20white"));
         high_score_label.getFont().scale(label_scale);
         high_score_label.setColor(Color.BLACK);
         high_score_label.setAlignment(Align.center);
+
 
         key_colours = new Array<>();
         key_colours.add(new Color(0xE4030333)); // red
@@ -459,6 +489,7 @@ public class LevelScreen extends BaseScreen {
 
         temp.add(score_label)
             .center()
+            .padRight(Gdx.graphics.getWidth() * 0.02f)
         ;
 
         // keys
@@ -473,6 +504,7 @@ public class LevelScreen extends BaseScreen {
             .width(Gdx.graphics.getWidth() * 0.04f)
             .height(Gdx.graphics.getHeight() * 0.04f)
             .padRight(Gdx.graphics.getWidth() * 0.01f)
+            .padLeft(Gdx.graphics.getWidth() * 0.02f)
         ;
 
         temp.add(high_score_label)
