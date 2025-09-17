@@ -59,6 +59,7 @@ public class CellGUI extends BaseActor {
             backgroundRegion = AssetLoader.textureAtlas.findRegion("emptyPixel");
     }
 
+
     @Override
     public void draw(Batch batch, float parentAlpha) {
         // Draw background first

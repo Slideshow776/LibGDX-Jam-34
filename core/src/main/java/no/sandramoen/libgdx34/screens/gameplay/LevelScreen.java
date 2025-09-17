@@ -2,10 +2,14 @@ package no.sandramoen.libgdx34.screens.gameplay;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.github.tommyettinger.textra.TextraLabel;
 
 import no.sandramoen.libgdx34.actors.Background;
 import no.sandramoen.libgdx34.actors.CellGUI;
@@ -25,10 +29,13 @@ public class LevelScreen extends BaseScreen {
     private GameBoard game_board;
     private Array<Array<CellGUI>> cell_guis;
 
-    private int win_count = 0;
     private float time = 0f;
+    private final float RESTART_DELAY_DURATION = 1.5f;
     private boolean is_game_over = false;
     private boolean is_game_started = false;
+
+    private int key_count = 0;
+    private final int NUM_KEYS_TO_GET = 7;
     private boolean has_current_key = false;
 
     private float enemy_spawn_counter = 0f;
@@ -37,6 +44,8 @@ public class LevelScreen extends BaseScreen {
     private final float ENEMY_SPAWN_MIN_FREQUENCY = 1.75f;
     private float enemy_spawn_frequency = ENEMY_SPAWN_MIN_FREQUENCY;
     private final float MAX_ENEMY_SPEED = 5f;
+
+    private Array<Image> key_images;
 
 
     @Override
@@ -74,11 +83,10 @@ public class LevelScreen extends BaseScreen {
             Gdx.app.exit();
         else if ((keycode == Keys.F1 || is_game_over) && time > 1.0f)
             restart();
-        else if(keycode == Keys.SLASH){
+        else if (keycode == Keys.SLASH){
             GameBoard.SEED = game_board.random.nextLong();
             restart();
-        }
-        else {
+        } else if (!is_game_over) {
             char typed = keycodeToChar(keycode);
             if (typed != 0) {
                 if (!game_board.movePlayerIfMatch(typed, has_current_key)) { // wrong letter was typed
@@ -104,7 +112,7 @@ public class LevelScreen extends BaseScreen {
 
                     boolean is_new_letters = false;
                     if (game_board.checkPlayerReachedGoalAndShuffle() && has_current_key) {
-                        win_count++;
+                        key_count++;
                         is_new_letters = true;
                         game_board.placeRandomKey();
                         has_current_key = false;
@@ -186,6 +194,7 @@ public class LevelScreen extends BaseScreen {
         is_game_started = false;
         has_current_key = false;
         time = 0f;
+        key_count = 0;
 
         AssetLoader.game_over_sound.play(BaseGame.soundVolume);
 
@@ -258,7 +267,7 @@ public class LevelScreen extends BaseScreen {
         cell_guis.clear();
 
         float startX = BaseGame.WORLD_WIDTH / 2f - 6f;    // center horizontally
-        float startY = BaseGame.WORLD_HEIGHT - 2f - 2.25f;   // start near top
+        float startY = BaseGame.WORLD_HEIGHT - 2f - 2.25f - 1.25f;   // start near top
 
         float margin_x = 1.25f;
         float margin_y = 0.5f;
@@ -338,18 +347,34 @@ public class LevelScreen extends BaseScreen {
 
 
     private void initialize_gui() {
-        //scoreLabel = new TextraLabel("0", AssetLoader.getLabelStyle("Play-Bold59white"));
-        //scoreLabel.setAlignment(Align.center);
+        /*TextraLabel scoreLabel = new TextraLabel("banana phone", AssetLoader.getLabelStyle("Play-Bold59white"));
+        scoreLabel.setAlignment(Align.center);*/
 
+        key_images = new Array<>();
+        for (int i = 0; i < 7; i++) {
+            Image image = new Image(AssetLoader.textureAtlas.findRegion("key"));
+            image.setColor(new Color(0f, 0f, 0f, 0.2f));
+            key_images.add(image);
+        }
 
         uiTable.defaults()
             .padTop(Gdx.graphics.getHeight() * .02f)
         ;
+
+        for (Image key_image : key_images)
+            uiTable.add(key_image)
+                .width(Gdx.graphics.getWidth() * 0.075f)
+                .height(Gdx.graphics.getHeight() * 0.075f)
+                .expandY()
+                .top()
+            ;
 
         /*uiTable.add(scoreLabel).center()
             .height(scoreLabel.getPrefHeight() * 1.5f)
             .padTop(-Gdx.graphics.getHeight() * 0.005f)
             .row()
         ;*/
+
+        //uiTable.setDebug(true);
     }
 }
