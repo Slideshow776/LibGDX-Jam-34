@@ -1,6 +1,9 @@
 package no.sandramoen.libgdx34.utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Random;
 
@@ -10,10 +13,13 @@ public class GameBoard {
 
     private final boolean IS_PRINT = false;
     private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private Random random = new Random();
+    public final RandomXS128 random;
+    public static long SEED = 123L;
 
 
     public GameBoard() {
+        random = new RandomXS128(SEED);
+        Gdx.app.log("RNG", "Seed used: " + SEED);
         rows = new Array<>();
         generateGrid();
         placePlayerAndGoalRandomly();
@@ -76,8 +82,15 @@ public class GameBoard {
             int[] goalPos = neighbors.get(random.nextInt(neighbors.size));
             rows.get(goalPos[0]).get(goalPos[1]).is_goal_here = true;
         } else {
-            // fallback
-            rows.get(this.playerRow).get(this.playerCol).is_goal_here = true;
+            // Fallback; this was previously placing the goal at the player! Bad robot!
+            rows.get(this.playerRow).get(this.playerCol).is_goal_here = false;
+            int goalX, goalY;
+            do {
+                goalX = random.nextInt(rows.size);
+                goalY = random.nextInt(rows.get(goalX).size);
+            } while (rows.get(goalX).get(goalY).is_player_here);
+
+            rows.get(goalX).get(goalY).is_goal_here = true;
         }
     }
 

@@ -72,11 +72,12 @@ public class LevelScreen extends BaseScreen {
     public boolean keyDown(int keycode) {
         if (keycode == Keys.ESCAPE)
             Gdx.app.exit();
-        else if (
-            (keycode == Keys.F1 || is_game_over) &&
-                time > 1.0f
-        )
+        else if ((keycode == Keys.F1 || is_game_over) && time > 1.0f)
             restart();
+        else if(keycode == Keys.SLASH){
+            GameBoard.SEED = game_board.random.nextLong();
+            restart();
+        }
         else {
             char typed = keycodeToChar(keycode);
             if (typed != 0) {
