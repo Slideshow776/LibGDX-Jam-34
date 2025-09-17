@@ -32,7 +32,7 @@ public class LevelScreen extends BaseScreen {
 
     private float time = 0f;
     private float game_time = 0f;
-    private final float RESTART_DELAY_DURATION = 1.5f;
+    private final float RESTART_DELAY_DURATION = 2.5f;
     private boolean is_game_over = false;
     private boolean is_game_started = false;
 
@@ -96,7 +96,7 @@ public class LevelScreen extends BaseScreen {
     public boolean keyDown(int keycode) {
         if (keycode == Keys.ESCAPE)
             Gdx.app.exit();
-        else if ((keycode == Keys.F1 || is_game_over) && time > 1.0f)
+        else if ((keycode == Keys.F1 || is_game_over) && time > RESTART_DELAY_DURATION)
             restart();
         else if (keycode == Keys.SLASH){
             GameBoard.SEED = game_board.random.nextLong();
@@ -123,11 +123,12 @@ public class LevelScreen extends BaseScreen {
                     if (game_board.checkIfKey()) {
                         has_current_key = true;
                         AssetLoader.key_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
+                        key_count++;
+                        updateKeyImages();
                     }
 
                     boolean is_new_letters = false;
                     if (game_board.checkPlayerReachedGoalAndShuffle() && has_current_key) {
-                        key_count++;
                         is_new_letters = true;
                         game_board.placeRandomKey();
                         has_current_key = false;
@@ -219,7 +220,6 @@ public class LevelScreen extends BaseScreen {
             high_score_label.setText(BaseGame.high_score + "s");
         }
     }
-
 
 
     private void set_game_over() {
@@ -347,6 +347,7 @@ public class LevelScreen extends BaseScreen {
         time = 0f;
         game_time = 0f;
         key_count = 0;
+        updateKeyImages();
 
         BaseGame.setActiveScreen(new LevelScreen());
     }
@@ -405,6 +406,20 @@ public class LevelScreen extends BaseScreen {
     }
 
 
+    private void updateKeyImages() {
+        for (int i = 0; i < key_images.size; i++) {
+            Image keyImage = key_images.get(i);
+            Color keyColor = key_colours.get(i);
+
+            if (i < key_count) { // Collected keys → fully visible
+                keyImage.setColor(keyColor.r, keyColor.g, keyColor.b, 1.0f);
+            } else { // Uncollected keys → semi-transparent
+                keyImage.setColor(keyColor.r, keyColor.g, keyColor.b, 0.15f);
+            }
+        }
+    }
+
+
     private void updateGUI(boolean is_new_letters) {
         for (int r = 0; r < game_board.rows.size; r++) {
             Array<Cell> row = game_board.rows.get(r);
@@ -419,7 +434,7 @@ public class LevelScreen extends BaseScreen {
                     gui.setPlayerHere(true);
                 } else if (cell.is_goal_here) {
                     gui.setGoalHere(true);
-                } else if (cell.is_key_here) {
+                } else if (cell.is_key_here && key_count < NUM_KEYS_TO_GET) {
                     gui.setKeyHere(true, key_colours.get(key_count));
                 } else {
                     gui.setPlayerHere(false);
@@ -457,21 +472,22 @@ public class LevelScreen extends BaseScreen {
 
 
         key_colours = new Array<>();
-        key_colours.add(new Color(0xE4030333)); // red
-        key_colours.add(new Color(0xFF8C0033)); // orange
-        key_colours.add(new Color(0xFFED0033)); // yellow
-        key_colours.add(new Color(0x00802633)); // green
-        key_colours.add(new Color(0x00D3FF33)); // light blue
-        key_colours.add(new Color(0x004CFF33)); // blue
-        key_colours.add(new Color(0x73298233)); // violet
+        key_colours.add(new Color(0xE40303FF)); // red
+        key_colours.add(new Color(0xFF8C00FF)); // orange
+        key_colours.add(new Color(0xFFED00FF)); // yellow
+        key_colours.add(new Color(0x008026FF)); // green
+        key_colours.add(new Color(0x00D3FFFF)); // light blue
+        key_colours.add(new Color(0x004CFFFF)); // blue
+        key_colours.add(new Color(0x732982FF)); // violet
         key_colours.add(Color.WHITE); // hack
         key_images = new Array<>();
-        for (int i = 0; i < NUM_KEYS_TO_GET - 1; i++) {
+        for (int i = 0; i < NUM_KEYS_TO_GET; i++) {
             Image image = new Image(AssetLoader.textureAtlas.findRegion("key"));
             image.setColor(key_colours.get(i));
             key_images.add(image);
         }
 
+        updateKeyImages();
 
         // ui setup
         uiTable.defaults()
