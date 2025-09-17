@@ -1,11 +1,15 @@
 package no.sandramoen.libgdx34.actors;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
 
 import no.sandramoen.libgdx34.utils.AssetLoader;
@@ -26,6 +30,8 @@ public class CellGUI extends BaseActor {
     private Color goal_colour = Color.YELLOW;
     private Color default_colour = Color.BLACK;
 
+    private TextureRegion backgroundRegion;
+
 
     public CellGUI(float x, float y, Stage stage, String letter) {
         super(x, y, stage);
@@ -38,6 +44,35 @@ public class CellGUI extends BaseActor {
             Actions.scaleTo(0f, 0f, 0f),
             Actions.scaleTo(1f, 1f, MathUtils.random(0.1f, 1.0f))
         ));
+    }
+
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        if (is_declared_goal)
+            backgroundRegion = AssetLoader.textureAtlas.findRegion("door");
+        else
+            backgroundRegion = AssetLoader.textureAtlas.findRegion("emptyPixel");
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        // Draw background first
+        if (backgroundRegion != null) {
+            batch.setColor(new Color(1f, 1f, 1f, 1f));
+            batch.draw(
+                backgroundRegion,
+                getX(), getY(),
+                getOriginX(), getOriginY(),
+                getWidth(), getHeight(),
+                1.2f * getScaleX(), 1.2f * getScaleY(),
+                getRotation()
+            );
+        }
+
+        // Then let BaseActor draw the letter + children
+        super.draw(batch, parentAlpha);
     }
 
 
@@ -78,6 +113,7 @@ public class CellGUI extends BaseActor {
         if (isPlayer) {
             if (!is_player) {
                 is_player = true;
+                is_declared_goal = false;
                 AssetLoader.move_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
                 setFont(Font.METAL_MANIA);
                 clearActions();

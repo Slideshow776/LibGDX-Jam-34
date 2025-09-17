@@ -31,12 +31,11 @@ public class LevelScreen extends BaseScreen {
     private boolean is_game_started = false;
 
     private float enemy_spawn_counter = 0f;
-    private float enemy_spawn_frequency = 7f;
     private float enemy_spawn_decrement = 1.0f;
     private float enemy_speed = 10.0f;
     private final float ENEMY_SPAWN_MIN_FREQUENCY = 1.75f;
+    private float enemy_spawn_frequency = ENEMY_SPAWN_MIN_FREQUENCY;
     private final float MAX_ENEMY_SPEED = 5f;
-
 
 
     @Override
@@ -93,6 +92,8 @@ public class LevelScreen extends BaseScreen {
                     }
                 } else { // correct letter was typed
                     boolean is_new_letters = false;
+                    if (!is_game_started)
+                        AssetLoader.game_start_sound.play(BaseGame.soundVolume);
                     is_game_started = true;
                     if (game_board.checkPlayerReachedGoalAndShuffle()) {
                         win_count++;
@@ -172,7 +173,9 @@ public class LevelScreen extends BaseScreen {
 
     private void set_game_over() {
         is_game_over = true;
+        is_game_started = false;
         time = 0f;
+        AssetLoader.game_over_sound.play(BaseGame.soundVolume);
 
         // Fade all cells out (but keep their actions like wobble)
         for (Array<CellGUI> row : cell_guis) {

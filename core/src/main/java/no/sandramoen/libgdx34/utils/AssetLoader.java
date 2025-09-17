@@ -28,6 +28,8 @@ public class AssetLoader implements AssetErrorListener {
     public static Sound new_letters_sound;
     public static Sound move_sound;
     public static Sound error_sound;
+    public static Sound game_over_sound;
+    public static Sound game_start_sound;
 
     public static Array<Music> music;
     //public static Music levelMusic;
@@ -69,6 +71,8 @@ public class AssetLoader implements AssetErrorListener {
         BaseGame.assetManager.load("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/613290__birdofthenorth__bassy-thud.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/675771__craigsmith__s31-08-acetylene-torch-multiple-pops.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/615457__melokacool__game-over-3.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/669792__melokacool__alarm-1.wav", Sound.class);
 
         // i18n
 
@@ -102,6 +106,8 @@ public class AssetLoader implements AssetErrorListener {
         new_letters_sound = BaseGame.assetManager.get("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
         move_sound = BaseGame.assetManager.get("audio/sounds/613290__birdofthenorth__bassy-thud.wav", Sound.class);
         error_sound = BaseGame.assetManager.get("audio/sounds/675771__craigsmith__s31-08-acetylene-torch-multiple-pops.wav", Sound.class);
+        game_over_sound = BaseGame.assetManager.get("audio/sounds/615457__melokacool__game-over-3.wav", Sound.class);
+        game_start_sound = BaseGame.assetManager.get("audio/sounds/669792__melokacool__alarm-1.wav", Sound.class);
 
         // i18n
 
