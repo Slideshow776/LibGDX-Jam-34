@@ -1,5 +1,6 @@
 ## my stuff
 /assets/images/included/packed/*
+/docs/*
 
 ## Gradle:
 .gradle/

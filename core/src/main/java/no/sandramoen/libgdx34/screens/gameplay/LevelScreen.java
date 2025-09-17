@@ -28,6 +28,7 @@ public class LevelScreen extends BaseScreen {
     private int win_count = 0;
     private float time = 0f;
     private boolean is_game_over = false;
+    private boolean is_game_started = false;
 
     private float enemy_spawn_counter = 0f;
     private float enemy_spawn_frequency = 7f;
@@ -59,7 +60,7 @@ public class LevelScreen extends BaseScreen {
     public void update(float delta) {
         time += delta;
 
-        if (is_game_over)
+        if (is_game_over || !is_game_started)
             return;
 
         handle_collision_detection();
@@ -79,8 +80,7 @@ public class LevelScreen extends BaseScreen {
         else {
             char typed = keycodeToChar(keycode);
             if (typed != 0) {
-                if (!game_board.movePlayerIfMatch(typed)) {
-                    // Find the CellGUI with the matching letter
+                if (!game_board.movePlayerIfMatch(typed)) { // wrong letter was typed
                     for (int r = 0; r < game_board.rows.size; r++) {
                         Array<Cell> row = game_board.rows.get(r);
                         Array<CellGUI> guiRow = cell_guis.get(r);
@@ -91,14 +91,16 @@ public class LevelScreen extends BaseScreen {
                                 guiRow.get(c).showError();
                         }
                     }
+                } else { // correct letter was typed
+                    boolean is_new_letters = false;
+                    is_game_started = true;
+                    if (game_board.checkPlayerReachedGoalAndShuffle()) {
+                        win_count++;
+                        is_new_letters = true;
+                        AssetLoader.new_letters_sound.play(BaseGame.soundVolume * 0.25f);
+                    }
+                    updateGUI(is_new_letters);
                 }
-                boolean is_new_letters = false;
-                if (game_board.checkPlayerReachedGoalAndShuffle()) {
-                    win_count++;
-                    is_new_letters = true;
-                    AssetLoader.new_letters_sound.play(BaseGame.soundVolume * 0.25f);
-                }
-                updateGUI(is_new_letters);
             }
         }
         return super.keyDown(keycode);
@@ -315,7 +317,6 @@ public class LevelScreen extends BaseScreen {
             }
         }
     }
-
 
 
     private void initialize_gui() {
