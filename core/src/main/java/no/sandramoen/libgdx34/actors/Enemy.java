@@ -11,9 +11,9 @@ import no.sandramoen.libgdx34.utils.BaseActor;
 import no.sandramoen.libgdx34.utils.BaseGame;
 
 public class Enemy extends BaseActor {
-    public float speed = 10f;
 
-    public Enemy(Stage stage, Array<Array<CellGUI>> cell_guis) {
+
+    public Enemy(Stage stage, Array<Array<CellGUI>> cell_guis, float speed) {
         super(0f, 0f, stage);
         loadImage("enemy/enemy");
         setSize(1.5f, 1.5f);
@@ -26,29 +26,25 @@ public class Enemy extends BaseActor {
             rotation_direction = -1f;
         addAction(Actions.forever(Actions.rotateBy(rotation_direction * 10f, 0.1f)));
 
-        spawn_at_edge(cell_guis);
+        spawn_at_edge(cell_guis, speed);
 
         // collision
         setBoundaryPolygon(8, 0.5f);
         setDebug(false);
     }
 
-    private void spawn_at_edge(Array<Array<CellGUI>> cell_guis) {
+    private void spawn_at_edge(Array<Array<CellGUI>> cell_guis, float speed) {
         if (MathUtils.randomBoolean()) {
             Array<CellGUI> randomRow = cell_guis.random();
             CellGUI randomCell = randomRow.random();
 
-            float rand = 0.9f;//MathUtils.random();
-            if (rand >= 0.75) { // left to right
+            float rand = MathUtils.random();
+            if (rand >= 0.5) { // left to right
                 setPosition(-1, randomCell.getY());
                 addAction(Actions.moveTo(BaseGame.WORLD_WIDTH + 1, getY(), speed));
-            } else if (rand >= 0.5) { // right to left
+            } else { // right to left
                 setPosition(BaseGame.WORLD_WIDTH + 1, randomCell.getY());
                 addAction(Actions.moveTo(-1, getY(), speed));
-            } else if (rand >= 0.25) { // bottom to top
-
-            } else { // top to bottom
-
             }
         } else {
             // Decide randomly whether to move bottom-to-top or top-to-bottom
@@ -85,12 +81,10 @@ public class Enemy extends BaseActor {
             float finalX = startX + dx * scale;
 
             // move along the straight line off screen
-            addAction(Actions.moveTo(finalX, finalY, speed));
-            addAction(Actions.after(Actions.removeActor()));
-
+            addAction(Actions.sequence(
+                Actions.moveTo(finalX, finalY, speed),
+                Actions.removeActor()
+            ));
         }
     }
-
-
-
 }

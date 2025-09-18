@@ -9,6 +9,8 @@ import no.sandramoen.libgdx34.utils.BaseGame;
 
 public class Overlay extends BaseActor {
 
+    public static final float DURATION = 0.25f;
+
     public Overlay(Stage stage) {
         super(0f, 0f, stage);
 
@@ -17,7 +19,7 @@ public class Overlay extends BaseActor {
         setPosition(-1, -1);
 
         setColor(Color.BLACK);
-        addAction(Actions.alpha(1.0f, 0f));
-        addAction(Actions.alpha(0.0f, 0.25f));
+        getColor().a = 1.0f;
+        addAction(Actions.alpha(0.0f, DURATION));
     }
 }

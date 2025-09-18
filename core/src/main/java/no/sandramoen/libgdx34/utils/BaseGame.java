@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 
 import no.sandramoen.libgdx34.screens.gameplay.LevelScreen;
+import no.sandramoen.libgdx34.screens.shell.MenuScreen;
 
 
 public abstract class BaseGame extends Game implements AssetErrorListener {
@@ -35,6 +36,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static final float WORLD_HEIGHT = 16f;
 
     public static int high_score = 0;
+    public static enum Difficulty {EASY, MEDIUM, HARD}
+    public static Difficulty current_difficulty;
 
     public BaseGame() {
         game = this;

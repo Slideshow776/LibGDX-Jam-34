@@ -65,7 +65,6 @@ public class CellGUI extends BaseActor {
     public void draw(Batch batch, float parentAlpha) {
         // Draw background first
         if (backgroundRegion != null) {
-            key_colour.a = 1f;
             batch.setColor(key_colour);
             batch.draw(
                 backgroundRegion,
@@ -179,7 +178,7 @@ public class CellGUI extends BaseActor {
         if (isKey) {
             is_key = true;
             is_player = false;
-            this.key_colour = key_colour;
+            this.key_colour = new Color(key_colour.r, key_colour.g, key_colour.b, 1.0f);
         } else {
             is_key = false;
         }

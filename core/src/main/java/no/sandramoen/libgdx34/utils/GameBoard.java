@@ -15,13 +15,12 @@ public class GameBoard {
     private final boolean IS_PRINT = false;
     private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public final RandomXS128 random;
-    public static long SEED = MathUtils.random(Long.MIN_VALUE, Long.MAX_VALUE);
-    //public static long SEED = 123L;
+    public static long SEED = 123L;
 
 
     public GameBoard() {
-        random = new RandomXS128(SEED);
-        Gdx.app.log("RNG", "Seed used: " + SEED);
+        random = new RandomXS128(); // set variable 'SEED' as input parameter to seed
+        //Gdx.app.log("RNG", "Seed used: " + SEED);
 
         rows = new Array<>();
         generateGrid();

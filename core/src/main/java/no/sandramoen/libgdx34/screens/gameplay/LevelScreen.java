@@ -17,12 +17,14 @@ import no.sandramoen.libgdx34.actors.Background;
 import no.sandramoen.libgdx34.actors.CellGUI;
 import no.sandramoen.libgdx34.actors.Enemy;
 import no.sandramoen.libgdx34.actors.Overlay;
+import no.sandramoen.libgdx34.screens.shell.MenuScreen;
 import no.sandramoen.libgdx34.utils.AssetLoader;
 import no.sandramoen.libgdx34.utils.BaseActor;
 import no.sandramoen.libgdx34.utils.BaseGame;
 import no.sandramoen.libgdx34.utils.BaseScreen;
 import no.sandramoen.libgdx34.utils.Cell;
 import no.sandramoen.libgdx34.utils.GameBoard;
+import no.sandramoen.libgdx34.utils.GameUtils;
 
 public class LevelScreen extends BaseScreen {
 
@@ -37,16 +39,15 @@ public class LevelScreen extends BaseScreen {
     private boolean is_game_over = false;
     private boolean is_game_started = false;
 
-    private int key_count = 0;
-    private final int NUM_KEYS_TO_GET = 7;
+    private int num_collected_keys = 0;
+    private int num_keys_to_get = 0;
     private boolean has_current_key = false;
-    private Array<Color> key_colours;
 
     private float enemy_spawn_counter = 0f;
     private float enemy_spawn_decrement = 1.0f;
-    private float enemy_speed = 10.0f;
-    private final float ENEMY_SPAWN_MIN_FREQUENCY = 1.75f;
-    private float enemy_spawn_frequency = ENEMY_SPAWN_MIN_FREQUENCY;
+    private float enemy_speed = 0f;
+    private float enemy_spawn_min_frequency = 1.0f;
+    private float enemy_spawn_frequency = enemy_spawn_min_frequency;
     private final float MAX_ENEMY_SPEED = 5f;
 
     private Array<Image> key_images;
@@ -54,11 +55,37 @@ public class LevelScreen extends BaseScreen {
     private TextraLabel high_score_label;
 
 
+    public LevelScreen() {
+        if (BaseGame.current_difficulty == BaseGame.Difficulty.EASY) {
+            enemy_speed = 20.0f;
+            enemy_spawn_decrement = 0.25f;
+            enemy_spawn_min_frequency = 1.5f;
+            enemy_spawn_frequency = enemy_spawn_min_frequency * 5;
+        } else if (BaseGame.current_difficulty == BaseGame.Difficulty.MEDIUM) {
+            enemy_speed = 10.0f;
+            enemy_spawn_decrement = 0.2f;
+            enemy_spawn_min_frequency = 1.5f;
+            enemy_spawn_frequency = enemy_spawn_min_frequency * 3;
+        } else if (BaseGame.current_difficulty == BaseGame.Difficulty.HARD) {
+            enemy_speed = 5.0f;
+            enemy_spawn_decrement = 0.25f;
+            enemy_spawn_min_frequency = 1.0f;
+            enemy_spawn_frequency = enemy_spawn_min_frequency * 2;
+        }
+    }
+
+
     @Override
     public void initialize() {
-        // background
         background = new Background(mainStage);
-        //map_background.getColor().a = 0.0f;
+
+        if (BaseGame.current_difficulty == BaseGame.Difficulty.EASY) {
+            num_keys_to_get = 5;
+        } else if (BaseGame.current_difficulty == BaseGame.Difficulty.MEDIUM) {
+            num_keys_to_get = 10;
+        } else if (BaseGame.current_difficulty == BaseGame.Difficulty.HARD) {
+            num_keys_to_get = 20;
+        }
 
         initialize_gui();
         //GameUtils.playLoopingMusic(AssetLoader.levelMusic);
@@ -68,13 +95,11 @@ public class LevelScreen extends BaseScreen {
         }
         high_score_label.setText(BaseGame.high_score == Integer.MAX_VALUE ? "--" : BaseGame.high_score + "s");
 
-
-        overlay = new Overlay(mainStage);
-
         game_board = new GameBoard();
         cell_guis = new Array<>();
         renderGameBoard();
 
+        overlay = new Overlay(mainStage);
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
     }
 
@@ -97,9 +122,12 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Keys.ESCAPE) {
-            Gdx.app.exit();
-        } else if ((keycode == Keys.F1 || is_game_over) && time > RESTART_DELAY_DURATION) {
+        if (keycode == Keys.ESCAPE && time > RESTART_DELAY_DURATION) {
+            overlay.addAction(Actions.sequence(
+                Actions.alpha(1.0f, Overlay.DURATION),
+                Actions.run(() -> BaseGame.setActiveScreen(new MenuScreen()))
+            ));
+        } else if (is_game_over && time > RESTART_DELAY_DURATION) {
             GameBoard.SEED = game_board.random.nextLong();
             restart();
         } else if (!is_game_over) {
@@ -124,7 +152,7 @@ public class LevelScreen extends BaseScreen {
                     if (game_board.checkIfKey()) {
                         has_current_key = true;
                         AssetLoader.key_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
-                        key_count++;
+                        num_collected_keys++;
                         updateKeyImages();
                     }
 
@@ -135,7 +163,7 @@ public class LevelScreen extends BaseScreen {
                         game_board.placeRandomKey();
                         has_current_key = false;
                         AssetLoader.new_letters_sound.play(BaseGame.soundVolume * 0.25f);
-                        if (key_count >= NUM_KEYS_TO_GET)
+                        if (num_collected_keys >= key_images.size)
                             set_win();
                     }
                     updateGUI(is_new_letters);
@@ -157,16 +185,15 @@ public class LevelScreen extends BaseScreen {
     private void handle_enemy_spawning(float delta) {
         enemy_spawn_counter += delta;
         if (enemy_spawn_counter >= enemy_spawn_frequency) {
-            Enemy enemy = new Enemy(mainStage, cell_guis);
-            enemy.speed = enemy_speed;
+            new Enemy(mainStage, cell_guis, enemy_speed);
             enemy_speed *= 0.9f;
             if (enemy_speed < MAX_ENEMY_SPEED)
                 enemy_speed = MAX_ENEMY_SPEED;
 
             enemy_spawn_counter = 0f;
             enemy_spawn_frequency -= enemy_spawn_decrement;
-            if (enemy_spawn_frequency < ENEMY_SPAWN_MIN_FREQUENCY)
-                enemy_spawn_frequency = ENEMY_SPAWN_MIN_FREQUENCY;
+            if (enemy_spawn_frequency < enemy_spawn_min_frequency)
+                enemy_spawn_frequency = enemy_spawn_min_frequency;
             enemy_spawn_decrement *= 1.05f;
 
             //System.out.println("freq: " + enemy_spawn_frequency + ", speed: " + enemy_speed);
@@ -349,10 +376,13 @@ public class LevelScreen extends BaseScreen {
         is_game_started = false;
         has_current_key = false;
         game_time = 0f;
-        key_count = 0;
+        num_collected_keys = 0;
         updateKeyImages();
 
-        BaseGame.setActiveScreen(new LevelScreen());
+        overlay.addAction(Actions.sequence(
+            Actions.alpha(1.0f, Overlay.DURATION),
+            Actions.run(() -> BaseGame.setActiveScreen(new LevelScreen()))
+        ));
     }
 
 
@@ -395,7 +425,7 @@ public class LevelScreen extends BaseScreen {
                 } else if (cell.is_goal_here) {
                     cellGUI.setGoalHere(true);
                 } else if(cell.is_key_here) {
-                    cellGUI.setKeyHere(true, key_colours.get(key_count));
+                    cellGUI.setKeyHere(true, key_images.get(num_collected_keys).getColor());
                 } else {
                     cellGUI.setPlayerHere(false);
                 }
@@ -411,13 +441,10 @@ public class LevelScreen extends BaseScreen {
 
     private void updateKeyImages() {
         for (int i = 0; i < key_images.size; i++) {
-            Image keyImage = key_images.get(i);
-            Color keyColor = key_colours.get(i);
-
-            if (i < key_count) { // Collected keys → fully visible
-                keyImage.setColor(keyColor.r, keyColor.g, keyColor.b, 1.0f);
-            } else { // Uncollected keys → semi-transparent
-                keyImage.setColor(keyColor.r, keyColor.g, keyColor.b, 0.15f);
+            if (i < num_collected_keys) {
+                key_images.get(i).getColor().a = 1.0f;
+            } else {
+                key_images.get(i).getColor().a = 0.15f;
             }
         }
     }
@@ -437,12 +464,12 @@ public class LevelScreen extends BaseScreen {
                     gui.setPlayerHere(true);
                 } else if (cell.is_goal_here) {
                     gui.setGoalHere(true);
-                } else if (cell.is_key_here && key_count < NUM_KEYS_TO_GET) {
-                    gui.setKeyHere(true, key_colours.get(key_count));
+                } else if (cell.is_key_here && num_collected_keys < key_images.size) {
+                    gui.setKeyHere(true, key_images.get(num_collected_keys).getColor());
                 } else {
                     gui.setPlayerHere(false);
                     gui.setGoalHere(false);
-                    gui.setKeyHere(false, key_colours.get(key_count));
+                    gui.setKeyHere(false, Color.WHITE);
                 }
 
                 if (is_new_letters) {
@@ -474,19 +501,10 @@ public class LevelScreen extends BaseScreen {
         high_score_label.setAlignment(Align.center);
 
 
-        key_colours = new Array<>();
-        key_colours.add(new Color(0xE40303FF)); // red
-        key_colours.add(new Color(0xFF8C00FF)); // orange
-        key_colours.add(new Color(0xFFED00FF)); // yellow
-        key_colours.add(new Color(0x008026FF)); // green
-        key_colours.add(new Color(0x00D3FFFF)); // light blue
-        key_colours.add(new Color(0x004CFFFF)); // blue
-        key_colours.add(new Color(0x732982FF)); // violet
-        key_colours.add(Color.WHITE); // hack
         key_images = new Array<>();
-        for (int i = 0; i < NUM_KEYS_TO_GET; i++) {
+        for (int i = 0; i < num_keys_to_get; i++) {
             Image image = new Image(AssetLoader.textureAtlas.findRegion("key"));
-            image.setColor(key_colours.get(i));
+            image.setColor(GameUtils.randomLightColor());
             key_images.add(image);
         }
 
@@ -511,12 +529,19 @@ public class LevelScreen extends BaseScreen {
             .padRight(Gdx.graphics.getWidth() * 0.02f)
         ;
 
+        Table temp2 = new Table();
         // keys
-        for (Image key_image : key_images)
-            temp.add(key_image)
+        for (int i = 0; i < key_images.size; i++) {
+            if (i > 0 && i % 10 == 0)
+                temp2.row();
+
+            temp2.add(key_images.get(i))
                 .width(Gdx.graphics.getWidth() * 0.075f)
                 .height(Gdx.graphics.getHeight() * 0.075f)
+                .center()
             ;
+        }
+        temp.add(temp2);
 
         // high score
         temp.add(high_score_image)

@@ -30,11 +30,9 @@ public class MenuScreen extends BaseScreen {
 
     private Background background;
     private BaseActor overlay;
-    public enum Difficulty {EASY, MEDIUM, HARD}
 
     @Override
     public void initialize() {
-        overlay = new Overlay(mainStage);
         background = new Background(mainStage);
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
 
@@ -51,6 +49,8 @@ public class MenuScreen extends BaseScreen {
         Image hard_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
         TypingLabel hard_label = new TypingLabel("\u200B\u200B\u200B\u200B{RAINBOW}H{ENDRAINBOW}ARD", playBold);
         hard_label.setAlignment(Align.left);
+
+        overlay = new Overlay(mainStage);
 
         // ui setup
         uiTable.defaults()
@@ -98,15 +98,20 @@ public class MenuScreen extends BaseScreen {
         if (keycode == Keys.ESCAPE) {
             Gdx.app.exit();
         } else if (keycode == Keys.E)
-            start(Difficulty.EASY);
+            start(BaseGame.Difficulty.EASY);
         else if (keycode == Keys.M)
-            start(Difficulty.MEDIUM);
+            start(BaseGame.Difficulty.MEDIUM);
         else if (keycode == Keys.H)
-            start(Difficulty.HARD);
+            start(BaseGame.Difficulty.HARD);
         return super.keyDown(keycode);
     }
 
-    private void start(Difficulty difficulty) {
-        BaseGame.setActiveScreen(new LevelScreen());
+    private void start(BaseGame.Difficulty difficulty) {
+        BaseGame.current_difficulty = difficulty;
+
+        overlay.addAction(Actions.sequence(
+            Actions.alpha(1.0f, Overlay.DURATION),
+            Actions.run(() -> BaseGame.setActiveScreen(new LevelScreen()))
+        ));
     }
 }
