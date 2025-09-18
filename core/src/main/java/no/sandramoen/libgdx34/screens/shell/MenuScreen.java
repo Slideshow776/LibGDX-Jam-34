@@ -41,6 +41,7 @@ public class MenuScreen extends BaseScreen {
         TypingLabel easy_label = new TypingLabel("{RAINBOW}E{ENDRAINBOW}ASY", AssetLoader.getLabelStyle("Play-Bold59white"));
         //easy_label.setColor(Color.BLACK);
         easy_label.setAlignment(Align.center);
+        easy_label.skipToTheEnd();
 
         Image medium_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
         TextraLabel medium_label = new TextraLabel("MEDIUM", AssetLoader.getLabelStyle("Play-Bold59white"));
@@ -87,6 +88,7 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void update(float delta) {
 
+        uiStage.act(delta);
     }
 
 
