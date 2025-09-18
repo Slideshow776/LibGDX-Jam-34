@@ -10,9 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
+import com.github.tommyettinger.textra.Styles;
 import com.github.tommyettinger.textra.TextraLabel;
 import com.github.tommyettinger.textra.TypingLabel;
 
+import com.github.tommyettinger.textra.effects.RainbowEffect;
 import no.sandramoen.libgdx34.actors.Background;
 import no.sandramoen.libgdx34.actors.Overlay;
 import no.sandramoen.libgdx34.gui.MadeByLabel;
@@ -36,17 +38,18 @@ public class MenuScreen extends BaseScreen {
         background = new Background(mainStage);
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
 
+        Styles.LabelStyle playBold = AssetLoader.getLabelStyle("Play-Bold59white");
         // ui resources
         Image easy_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
-        TypingLabel easy_label = new TypingLabel("{RAINBOW}E{ENDRAINBOW}ASY", AssetLoader.getLabelStyle("Play-Bold59white"));
+        TypingLabel easy_label = new TypingLabel("{RAINBOW}E{ENDRAINBOW}ASY", playBold);
         easy_label.setAlignment(Align.left);
 
         Image medium_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
-        TypingLabel medium_label = new TypingLabel("{RAINBOW}M{ENDRAINBOW}EDIUM", AssetLoader.getLabelStyle("Play-Bold59white"));
+        TypingLabel medium_label = new TypingLabel("\u200B\u200B{RAINBOW}M{ENDRAINBOW}EDIUM", playBold);
         medium_label.setAlignment(Align.right);
 
         Image hard_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
-        TypingLabel hard_label = new TypingLabel("{RAINBOW}H{ENDRAINBOW}ARD", AssetLoader.getLabelStyle("Play-Bold59white"));
+        TypingLabel hard_label = new TypingLabel("\u200B\u200B\u200B\u200B{RAINBOW}H{ENDRAINBOW}ARD", playBold);
         hard_label.setAlignment(Align.left);
 
         // ui setup
