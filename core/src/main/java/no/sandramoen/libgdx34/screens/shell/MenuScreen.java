@@ -3,149 +3,107 @@ package no.sandramoen.libgdx34.screens.shell;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
+import com.github.tommyettinger.textra.TextraLabel;
+import com.github.tommyettinger.textra.TypingLabel;
 
+import no.sandramoen.libgdx34.actors.Background;
+import no.sandramoen.libgdx34.actors.Overlay;
 import no.sandramoen.libgdx34.gui.MadeByLabel;
 import no.sandramoen.libgdx34.screens.gameplay.LevelScreen;
 import no.sandramoen.libgdx34.utils.AssetLoader;
+import no.sandramoen.libgdx34.utils.BaseActor;
 import no.sandramoen.libgdx34.utils.BaseGame;
 import no.sandramoen.libgdx34.utils.BaseScreen;
 import no.sandramoen.libgdx34.utils.GameUtils;
 
 
 public class MenuScreen extends BaseScreen {
-    private int initializedWidth;
+
+    private Background background;
+    private BaseActor overlay;
+    public enum Difficulty {EASY, MEDIUM, HARD}
 
     @Override
     public void initialize() {
-        Image featureGraphics = new Image(AssetLoader.textureAtlas.findRegion("GUI/feature graphics"));
-        featureGraphics.setOrigin(Align.center);
-        featureGraphics.addAction(Actions.sequence(Actions.fadeOut(0), Actions.fadeIn(.5f)));
-        uiTable.add(featureGraphics)
-                .padBottom(Gdx.graphics.getHeight() * .045f)
-                .size(Gdx.graphics.getWidth() * .6f, Gdx.graphics.getHeight() * .225f)
-                .row();
+        overlay = new Overlay(mainStage);
+        background = new Background(mainStage);
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
 
-        addTextButtons();
+        // ui resources
+        Image easy_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
+        TypingLabel easy_label = new TypingLabel("{RAINBOW}E{ENDRAINBOW}ASY", AssetLoader.getLabelStyle("Play-Bold59white"));
+        //easy_label.setColor(Color.BLACK);
+        easy_label.setAlignment(Align.center);
 
-        uiTable.add(new MadeByLabel())
-                .fillX()
-                .padTop(Gdx.graphics.getHeight() * .09f);
+        Image medium_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
+        TextraLabel medium_label = new TextraLabel("MEDIUM", AssetLoader.getLabelStyle("Play-Bold59white"));
+        //medium_label.setColor(Color.BLACK);
+        medium_label.setAlignment(Align.center);
 
-        /*uiTable.setDebug(true);*/
+        Image hard_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
+        TextraLabel hard_label = new TextraLabel("HARD", AssetLoader.getLabelStyle("Play-Bold59white"));
+        //hard_label.setColor(Color.BLACK);
+        hard_label.setAlignment(Align.center);
 
-        if (Gdx.input.isCursorCatched())
-            Gdx.input.setCursorCatched(false);
+        // ui setup
+        uiTable.defaults()
+            .padTop(Gdx.graphics.getHeight() * .02f)
+        ;
 
-        /*BaseGame.levelFinishMusic.stop();
-        BaseGame.menuMusic.setVolume(BaseGame.musicVolume);
-        BaseGame.menuMusic.play();*/
+        uiTable.add(easy_image)
+            .width(Gdx.graphics.getWidth() * 0.04f)
+            .height(Gdx.graphics.getHeight() * 0.04f)
+            .padRight(Gdx.graphics.getWidth() * 0.01f)
+        ;
+        uiTable.add(easy_label)
+            .row()
+
+        ;uiTable.add(medium_image)
+            .width(Gdx.graphics.getWidth() * 0.04f)
+            .height(Gdx.graphics.getHeight() * 0.04f)
+            .padRight(Gdx.graphics.getWidth() * 0.01f)
+        ;
+        uiTable.add(medium_label)
+            .row()
+
+        ;uiTable.add(hard_image)
+            .width(Gdx.graphics.getWidth() * 0.04f)
+            .height(Gdx.graphics.getHeight() * 0.04f)
+            .padRight(Gdx.graphics.getWidth() * 0.01f)
+        ;
+        uiTable.add(hard_label)
+            .row()
+        ;
     }
+
 
     @Override
     public void update(float delta) {
+
     }
 
-    @Override
-    public void resize(int width, int height) {
-        if (initializedWidth != 0)
-            initializedWidth = width;
-        super.resize(width, height);
-    }
-
-    @Override
-    public void resume() {
-        if (initializedWidth == 0)
-            BaseGame.setActiveScreen(new MenuScreen());
-        super.resume();
-    }
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Keys.ESCAPE || keycode == Keys.Q && !uiTable.hasActions())
-            uiTable.addAction(exitGameWithSoundAndDelay());
-        else if (keycode == Keys.ENTER || keycode == Keys.NUMPAD_ENTER || keycode == Keys.SPACE)
-            start();
+        if (keycode == Keys.ESCAPE) {
+            Gdx.app.exit();
+        } else if (keycode == Keys.E)
+            start(Difficulty.EASY);
+        else if (keycode == Keys.M)
+            start(Difficulty.MEDIUM);
+        else if (keycode == Keys.H)
+            start(Difficulty.HARD);
         return super.keyDown(keycode);
     }
 
-    private void addTextButtons() {
-        uiTable.defaults()
-                .width(Gdx.graphics.getWidth() * .125f)
-                .height(Gdx.graphics.getHeight() * .075f)
-                .spaceTop(Gdx.graphics.getHeight() * .01f);
-
-        if (BaseGame.levelScreen != null)
-            uiTable.add(resumeButton()).row();
-        uiTable.add(startButton()).row();
-        uiTable.add(optionsButton()).row();
-        uiTable.add(exitButton()).row();
-        uiTable.defaults().reset();
-    }
-
-    private TextButton resumeButton() {
-        TextButton button = new TextButton("Resume", AssetLoader.mySkin);
-        button.setColor(Color.BLUE);
-        button.addListener(
-                (Event event) -> {
-                    if (GameUtils.isTouchDownEvent(event))
-                        BaseGame.setActiveScreen(BaseGame.levelScreen);
-                    return false;
-                }
-        );
-        return button;
-    }
-
-    private TextButton startButton() {
-        TextButton button = new TextButton("Start", AssetLoader.mySkin);
-        button.addListener(
-                (Event event) -> {
-                    if (GameUtils.isTouchDownEvent(event))
-                        start();
-                    return false;
-                }
-        );
-        return button;
-    }
-
-    private TextButton optionsButton() {
-        TextButton button = new TextButton("Options", AssetLoader.mySkin);
-        button.addListener(
-                (Event event) -> {
-                    if (GameUtils.isTouchDownEvent(event))
-                        BaseGame.setActiveScreen(new no.sandramoen.libgdx34.screens.shell.OptionsScreen());
-                    return false;
-                }
-        );
-        return button;
-    }
-
-    private TextButton exitButton() {
-        TextButton button = new TextButton("Exit", AssetLoader.mySkin);
-        button.addListener(
-                (Event event) -> {
-                    if (GameUtils.isTouchDownEvent(event) && !button.hasActions())
-                        button.addAction(exitGameWithSoundAndDelay());
-                    return false;
-                }
-        );
-        return button;
-    }
-
-    private void start() {
+    private void start(Difficulty difficulty) {
         BaseGame.setActiveScreen(new LevelScreen());
-    }
-
-    private SequenceAction exitGameWithSoundAndDelay() {
-        return Actions.sequence(
-                // Actions.run(() -> playRandomSound()),
-                Actions.delay(1),
-                Actions.run(() -> Gdx.app.exit())
-        );
     }
 }

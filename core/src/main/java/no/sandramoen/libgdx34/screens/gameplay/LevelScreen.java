@@ -3,6 +3,7 @@ package no.sandramoen.libgdx34.screens.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -25,7 +26,7 @@ import no.sandramoen.libgdx34.utils.GameBoard;
 
 public class LevelScreen extends BaseScreen {
 
-    private Background map_background;
+    private Background background;
     private BaseActor overlay;
     private GameBoard game_board;
     private Array<Array<CellGUI>> cell_guis;
@@ -56,7 +57,7 @@ public class LevelScreen extends BaseScreen {
     @Override
     public void initialize() {
         // background
-        map_background = new Background(mainStage);
+        background = new Background(mainStage);
         //map_background.getColor().a = 0.0f;
 
         initialize_gui();
@@ -73,6 +74,8 @@ public class LevelScreen extends BaseScreen {
         game_board = new GameBoard();
         cell_guis = new Array<>();
         renderGameBoard();
+
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
     }
 
 
