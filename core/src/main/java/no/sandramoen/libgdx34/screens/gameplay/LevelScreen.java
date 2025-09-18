@@ -32,7 +32,7 @@ public class LevelScreen extends BaseScreen {
 
     private float time = 0f;
     private float game_time = 0f;
-    private final float RESTART_DELAY_DURATION = 2.5f;
+    private final float RESTART_DELAY_DURATION = 1.0f;
     private boolean is_game_over = false;
     private boolean is_game_started = false;
 
@@ -94,11 +94,9 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Keys.ESCAPE)
+        if (keycode == Keys.ESCAPE) {
             Gdx.app.exit();
-        else if ((keycode == Keys.F1 || is_game_over) && time > RESTART_DELAY_DURATION)
-            restart();
-        else if (keycode == Keys.SLASH){
+        } else if ((keycode == Keys.F1 || is_game_over) && time > RESTART_DELAY_DURATION) {
             GameBoard.SEED = game_board.random.nextLong();
             restart();
         } else if (!is_game_over) {
@@ -117,7 +115,7 @@ public class LevelScreen extends BaseScreen {
                     }
                 } else { // correct letter was typed
                     if (!is_game_started)
-                        AssetLoader.game_start_sound.play(BaseGame.soundVolume);
+                        AssetLoader.game_start_sound.play(BaseGame.soundVolume * 0.25f);
                     is_game_started = true;
 
                     if (game_board.checkIfKey()) {
@@ -127,6 +125,7 @@ public class LevelScreen extends BaseScreen {
                         updateKeyImages();
                     }
 
+                    //AssetLoader.locked_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
                     boolean is_new_letters = false;
                     if (game_board.checkPlayerReachedGoalAndShuffle() && has_current_key) {
                         is_new_letters = true;
@@ -224,6 +223,7 @@ public class LevelScreen extends BaseScreen {
 
     private void set_game_over() {
         is_game_over = true;
+        time = 0f;
         AssetLoader.game_over_sound.play(BaseGame.soundVolume);
 
         // Fade all cells out (but keep their actions like wobble)
@@ -283,6 +283,7 @@ public class LevelScreen extends BaseScreen {
 
     private void set_win() {
         is_game_over = true;
+        time = 0f;
         updateHighScoreIfNeeded();
         AssetLoader.game_over_sound.play(BaseGame.soundVolume);
 
@@ -344,7 +345,6 @@ public class LevelScreen extends BaseScreen {
     private void restart() {
         is_game_started = false;
         has_current_key = false;
-        time = 0f;
         game_time = 0f;
         key_count = 0;
         updateKeyImages();

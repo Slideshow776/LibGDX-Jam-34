@@ -1,6 +1,7 @@
 package no.sandramoen.libgdx34.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -14,12 +15,14 @@ public class GameBoard {
     private final boolean IS_PRINT = false;
     private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public final RandomXS128 random;
-    public static long SEED = 123L;
+    public static long SEED = MathUtils.random(Long.MIN_VALUE, Long.MAX_VALUE);
+    //public static long SEED = 123L;
 
 
     public GameBoard() {
         random = new RandomXS128(SEED);
         Gdx.app.log("RNG", "Seed used: " + SEED);
+
         rows = new Array<>();
         generateGrid();
         placePlayerAndGoalRandomly();
@@ -198,9 +201,9 @@ public class GameBoard {
             Cell neighbor = rows.get(n[0]).get(n[1]);
             if (neighbor.letter.equalsIgnoreCase(String.valueOf(typedLetter))) {
 
-                // 🚪 Prevent moving onto goal if it's locked
                 if (neighbor.is_goal_here && !hasKey) {
-                    return false; // block movement until key is collected
+                    AssetLoader.locked_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
+                    return false;
                 }
 
                 // Move player
