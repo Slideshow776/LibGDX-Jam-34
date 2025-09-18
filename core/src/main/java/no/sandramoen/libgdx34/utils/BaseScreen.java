@@ -54,6 +54,7 @@ public abstract class BaseScreen implements Screen, InputProcessor {
         mainStage.getViewport().apply();
         mainStage.draw();
 
+        uiStage.act();
         uiStage.getViewport().apply();
         uiStage.draw();
     }

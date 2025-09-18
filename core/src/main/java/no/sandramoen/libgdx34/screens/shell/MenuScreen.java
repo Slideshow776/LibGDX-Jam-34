@@ -39,19 +39,15 @@ public class MenuScreen extends BaseScreen {
         // ui resources
         Image easy_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
         TypingLabel easy_label = new TypingLabel("{RAINBOW}E{ENDRAINBOW}ASY", AssetLoader.getLabelStyle("Play-Bold59white"));
-        //easy_label.setColor(Color.BLACK);
-        easy_label.setAlignment(Align.center);
-        easy_label.skipToTheEnd();
+        easy_label.setAlignment(Align.left);
 
         Image medium_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
-        TextraLabel medium_label = new TextraLabel("MEDIUM", AssetLoader.getLabelStyle("Play-Bold59white"));
-        //medium_label.setColor(Color.BLACK);
-        medium_label.setAlignment(Align.center);
+        TypingLabel medium_label = new TypingLabel("{RAINBOW}M{ENDRAINBOW}EDIUM", AssetLoader.getLabelStyle("Play-Bold59white"));
+        medium_label.setAlignment(Align.right);
 
         Image hard_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
-        TextraLabel hard_label = new TextraLabel("HARD", AssetLoader.getLabelStyle("Play-Bold59white"));
-        //hard_label.setColor(Color.BLACK);
-        hard_label.setAlignment(Align.center);
+        TypingLabel hard_label = new TypingLabel("{RAINBOW}H{ENDRAINBOW}ARD", AssetLoader.getLabelStyle("Play-Bold59white"));
+        hard_label.setAlignment(Align.left);
 
         // ui setup
         uiTable.defaults()
@@ -64,6 +60,7 @@ public class MenuScreen extends BaseScreen {
             .padRight(Gdx.graphics.getWidth() * 0.01f)
         ;
         uiTable.add(easy_label)
+            .left()
             .row()
 
         ;uiTable.add(medium_image)
@@ -72,6 +69,7 @@ public class MenuScreen extends BaseScreen {
             .padRight(Gdx.graphics.getWidth() * 0.01f)
         ;
         uiTable.add(medium_label)
+            .left()
             .row()
 
         ;uiTable.add(hard_image)
@@ -80,16 +78,16 @@ public class MenuScreen extends BaseScreen {
             .padRight(Gdx.graphics.getWidth() * 0.01f)
         ;
         uiTable.add(hard_label)
+            .left()
             .row()
         ;
+
+        //uiTable.setDebug(true);
     }
 
 
     @Override
-    public void update(float delta) {
-
-        uiStage.act(delta);
-    }
+    public void update(float delta) {}
 
 
     @Override
