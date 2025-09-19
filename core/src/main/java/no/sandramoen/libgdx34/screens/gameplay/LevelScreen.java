@@ -519,8 +519,8 @@ public class LevelScreen extends BaseScreen {
 
         // score
         temp.add(score_image)
-            .width(Gdx.graphics.getWidth() * 0.04f)
-            .height(Gdx.graphics.getHeight() * 0.04f)
+            .width(Gdx.graphics.getWidth() * 0.05f)
+            .height(Gdx.graphics.getHeight() * 0.05f)
             .padRight(Gdx.graphics.getWidth() * 0.01f)
         ;
 
@@ -545,8 +545,8 @@ public class LevelScreen extends BaseScreen {
 
         // high score
         temp.add(high_score_image)
-            .width(Gdx.graphics.getWidth() * 0.04f)
-            .height(Gdx.graphics.getHeight() * 0.04f)
+            .width(Gdx.graphics.getWidth() * 0.05f)
+            .height(Gdx.graphics.getHeight() * 0.05f)
             .padRight(Gdx.graphics.getWidth() * 0.01f)
             .padLeft(Gdx.graphics.getWidth() * 0.02f)
         ;

@@ -71,7 +71,7 @@ public class CellGUI extends BaseActor {
                 getX(), getY(),
                 getOriginX(), getOriginY(),
                 getWidth(), getHeight(),
-                1.2f * getScaleX(), 1.2f * getScaleY(),
+                1.5f * getScaleX(), 1.5f * getScaleY(),
                 getRotation()
             );
         }
