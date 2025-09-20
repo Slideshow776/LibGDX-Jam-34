@@ -400,6 +400,8 @@ public class LevelScreen extends BaseScreen {
         float margin_x = 1.25f;
         float margin_y = 0.5f;
 
+        boolean placedPlayer = false, placedGoal = false;
+
         for (int r = 0; r < game_board.rows.size; r++) {
             Array<Cell> row = game_board.rows.get(r);
             Array<CellGUI> guiRow = new Array<>();
@@ -419,15 +421,18 @@ public class LevelScreen extends BaseScreen {
                 float y = startY - r * ((tempHeight * margin_y) + 3 * margin_y); // stagger vertically for hex
 
                 CellGUI cellGUI = new CellGUI(x, y, mainStage, cell.letter);
-                if (cell.is_player_here) {
+                if (cell.is_player_here && !placedPlayer) {
                     cellGUI.is_player = false; // HACK: needs to be false to work, actually means true
                     cellGUI.setPlayerHere(true);
-                } else if (cell.is_goal_here) {
+                    placedPlayer = true;
+                } else if (cell.is_goal_here && !placedGoal) {
                     cellGUI.setGoalHere(true);
+                    placedGoal = true;
                 } else if(cell.is_key_here) {
                     cellGUI.setKeyHere(true, key_images.get(num_collected_keys).getColor());
                 } else {
                     cellGUI.setPlayerHere(false);
+                    cellGUI.setGoalHere(false);
                 }
 
 
@@ -451,6 +456,7 @@ public class LevelScreen extends BaseScreen {
 
 
     private void updateGUI(boolean is_new_letters) {
+        boolean placedPlayer = false, placedGoal = false;
         for (int r = 0; r < game_board.rows.size; r++) {
             Array<Cell> row = game_board.rows.get(r);
             Array<CellGUI> guiRow = cell_guis.get(r);
@@ -460,11 +466,17 @@ public class LevelScreen extends BaseScreen {
                 CellGUI gui = guiRow.get(c);
 
                 // Highlight player or goal
-                if (cell.is_player_here) {
+                if (cell.is_player_here && !placedPlayer) {
                     gui.setPlayerHere(true);
-                } else if (cell.is_goal_here) {
+                    gui.setGoalHere(false);
+                    placedPlayer = true;
+                } else if (cell.is_goal_here && !placedGoal) {
+                    gui.setPlayerHere(false);
                     gui.setGoalHere(true);
+                    placedGoal = true;
                 } else if (cell.is_key_here && num_collected_keys < key_images.size) {
+                    gui.setPlayerHere(false);
+                    gui.setGoalHere(false);
                     gui.setKeyHere(true, key_images.get(num_collected_keys).getColor());
                 } else {
                     gui.setPlayerHere(false);
