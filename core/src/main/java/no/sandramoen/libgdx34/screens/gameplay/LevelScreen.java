@@ -162,7 +162,7 @@ public class LevelScreen extends BaseScreen {
                         is_new_letters = true;
                         game_board.placeRandomKey();
                         has_current_key = false;
-                        AssetLoader.new_letters_sound.play(BaseGame.soundVolume * 0.25f);
+                        AssetLoader.door_open_sound.play(BaseGame.soundVolume * 0.5f);
                         if (num_collected_keys >= key_images.size)
                             set_win();
                     }

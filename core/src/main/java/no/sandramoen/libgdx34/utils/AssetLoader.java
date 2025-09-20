@@ -32,6 +32,7 @@ public class AssetLoader implements AssetErrorListener {
     public static Sound game_start_sound;
     public static Sound key_sound;
     public static Sound locked_sound;
+    public static Sound door_open_sound;
 
     public static Array<Music> music;
     //public static Music levelMusic;
@@ -77,6 +78,7 @@ public class AssetLoader implements AssetErrorListener {
         BaseGame.assetManager.load("audio/sounds/669792__melokacool__alarm-1.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/634948__discordantscraps__keychain.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/391724__jpolito__jp_circuitbox_locked01.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/455324__rambler52__heavy-door-creaking_05.wav", Sound.class);
 
         // i18n
 
@@ -114,6 +116,7 @@ public class AssetLoader implements AssetErrorListener {
         game_start_sound = BaseGame.assetManager.get("audio/sounds/669792__melokacool__alarm-1.wav", Sound.class);
         key_sound = BaseGame.assetManager.get("audio/sounds/634948__discordantscraps__keychain.wav", Sound.class);
         locked_sound = BaseGame.assetManager.get("audio/sounds/391724__jpolito__jp_circuitbox_locked01.wav", Sound.class);
+        door_open_sound = BaseGame.assetManager.get("audio/sounds/455324__rambler52__heavy-door-creaking_05.wav", Sound.class);
 
         // i18n
 

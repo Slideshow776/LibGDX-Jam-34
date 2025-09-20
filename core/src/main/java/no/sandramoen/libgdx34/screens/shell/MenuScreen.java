@@ -16,6 +16,7 @@ import com.github.tommyettinger.textra.TypingLabel;
 
 import com.github.tommyettinger.textra.effects.RainbowEffect;
 import no.sandramoen.libgdx34.actors.Background;
+import no.sandramoen.libgdx34.actors.Enemy;
 import no.sandramoen.libgdx34.actors.Overlay;
 import no.sandramoen.libgdx34.gui.MadeByLabel;
 import no.sandramoen.libgdx34.screens.gameplay.LevelScreen;
@@ -50,6 +51,18 @@ public class MenuScreen extends BaseScreen {
         TypingLabel hard_label = new TypingLabel("\u200B\u200B\u200B\u200B{RAINBOW}H{ENDRAINBOW}ARD", playBold);
         hard_label.setAlignment(Align.left);
 
+        Enemy easy_enemy = new Enemy(mainStage, null, 50.0f);
+        easy_enemy.setPosition(5.1f, 8.1f);
+        easy_enemy.setScale(0.6f);
+
+        Enemy medium_enemy = new Enemy(mainStage, null, 10.0f);
+        medium_enemy.setPosition(5.1f, 7.0f);
+        medium_enemy.setScale(0.6f);
+
+        Enemy hard_enemy = new Enemy(mainStage, null, 1.0f);
+        hard_enemy.setPosition(5.1f, 6.0f);
+        hard_enemy.setScale(0.6f);
+
         overlay = new Overlay(mainStage);
 
         // ui setup
@@ -57,29 +70,31 @@ public class MenuScreen extends BaseScreen {
             .padTop(Gdx.graphics.getHeight() * .02f)
         ;
 
-        uiTable.add(easy_image)
+        /*uiTable.add(easy_image)
             .width(Gdx.graphics.getWidth() * 0.04f)
             .height(Gdx.graphics.getHeight() * 0.04f)
             .padRight(Gdx.graphics.getWidth() * 0.01f)
-        ;
+        ;*/
         uiTable.add(easy_label)
             .left()
             .row()
+        ;
 
-        ;uiTable.add(medium_image)
+        /*;uiTable.add(medium_image)
             .width(Gdx.graphics.getWidth() * 0.04f)
             .height(Gdx.graphics.getHeight() * 0.04f)
             .padRight(Gdx.graphics.getWidth() * 0.01f)
-        ;
+        ;*/
         uiTable.add(medium_label)
             .left()
             .row()
+        ;
 
-        ;uiTable.add(hard_image)
+        /*;uiTable.add(hard_image)
             .width(Gdx.graphics.getWidth() * 0.04f)
             .height(Gdx.graphics.getHeight() * 0.04f)
             .padRight(Gdx.graphics.getWidth() * 0.01f)
-        ;
+        ;*/
         uiTable.add(hard_label)
             .left()
             .row()
