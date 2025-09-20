@@ -1,12 +1,15 @@
 package no.sandramoen.libgdx34.actors;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import no.sandramoen.libgdx34.utils.AssetLoader;
 import no.sandramoen.libgdx34.utils.BaseActor;
 import no.sandramoen.libgdx34.utils.BaseGame;
 
@@ -15,23 +18,33 @@ public class Enemy extends BaseActor {
 
     public Enemy(Stage stage, Array<Array<CellGUI>> cell_guis, float speed) {
         super(0f, 0f, stage);
-        loadImage("enemy/enemy");
+
+        Array<TextureRegion> images = new Array<>();
+        images.add(AssetLoader.textureAtlas.findRegion("enemy/0"));
+        images.add(AssetLoader.textureAtlas.findRegion("enemy/1"));
+        images.add(AssetLoader.textureAtlas.findRegion("enemy/2"));
+        Animation<TextureRegion> animation = new Animation<>(0.5f, images, Animation.PlayMode.LOOP);
+        setAnimation(animation);
+
+        //loadImage("enemy/enemy");
         setSize(1.5f, 1.5f);
         setOrigin(Align.center);
 
         // visuals
-        setColor(Color.RED);
+        setColor(new Color(0xfa5b6dFF)); // Red
         float rotation_direction = 1f;
         if (MathUtils.randomBoolean())
             rotation_direction = -1f;
-        addAction(Actions.forever(Actions.rotateBy(rotation_direction * 10f, 0.1f)));
+        addAction(Actions.forever(Actions.rotateBy(rotation_direction * 10f, 0.1f * speed / 10f)));
 
-        spawn_at_edge(cell_guis, speed);
+        if (cell_guis != null)
+            spawn_at_edge(cell_guis, speed);
 
         // collision
         setBoundaryPolygon(8, 0.5f);
         setDebug(false);
     }
+
 
     private void spawn_at_edge(Array<Array<CellGUI>> cell_guis, float speed) {
         if (MathUtils.randomBoolean()) {
