@@ -37,7 +37,8 @@ public class MenuScreen extends BaseScreen {
         background = new Background(mainStage);
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
 
-        Styles.LabelStyle playBold = AssetLoader.getLabelStyle("Play-Bold59white");
+        Styles.LabelStyle playBold = AssetLoader.getLabelStyle("Alegreya59white");
+        playBold.font.scale(1.1f);
         // ui resources
         Image easy_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
         TypingLabel easy_label = new TypingLabel("{RAINBOW}E{ENDRAINBOW}ASY", playBold);
@@ -51,17 +52,19 @@ public class MenuScreen extends BaseScreen {
         TypingLabel hard_label = new TypingLabel("\u200B\u200B\u200B\u200B{RAINBOW}H{ENDRAINBOW}ARD", playBold);
         hard_label.setAlignment(Align.left);
 
+        float x_pos = 5.2f;
+        float scale = 0.375f;
         Enemy easy_enemy = new Enemy(mainStage, null, 50.0f);
-        easy_enemy.setPosition(5.1f, 8.1f);
-        easy_enemy.setScale(0.6f);
+        easy_enemy.setPosition(x_pos, 8.15f);
+        easy_enemy.setScale(scale);
 
         Enemy medium_enemy = new Enemy(mainStage, null, 10.0f);
-        medium_enemy.setPosition(5.1f, 7.0f);
-        medium_enemy.setScale(0.6f);
+        medium_enemy.setPosition(x_pos, 6.95f);
+        medium_enemy.setScale(scale);
 
         Enemy hard_enemy = new Enemy(mainStage, null, 1.0f);
-        hard_enemy.setPosition(5.1f, 6.0f);
-        hard_enemy.setScale(0.6f);
+        hard_enemy.setPosition(x_pos, 5.85f);
+        hard_enemy.setScale(scale);
 
         overlay = new Overlay(mainStage);
 

@@ -162,7 +162,7 @@ public class LevelScreen extends BaseScreen {
                         is_new_letters = true;
                         game_board.placeRandomKey();
                         has_current_key = false;
-                        AssetLoader.door_open_sound.play(BaseGame.soundVolume * 0.5f);
+                        AssetLoader.door_open_sound.play(BaseGame.soundVolume * 0.4f, MathUtils.random(0.9f, 1.4f), 0f);
                         if (num_collected_keys >= key_images.size)
                             set_win();
                     }
@@ -499,15 +499,15 @@ public class LevelScreen extends BaseScreen {
 
     private void initialize_gui() {
         // resources setup
-        float label_scale = 0.5f;
+        float label_scale = 1.0f;
         Image score_image = new Image(AssetLoader.textureAtlas.findRegion("clock"));
-        score_label = new TextraLabel("0s", AssetLoader.getLabelStyle("Play-Bold20white"));
+        score_label = new TextraLabel("0s", AssetLoader.getLabelStyle("Alegreya40white"));
         score_label.getFont().scale(label_scale);
         score_label.setColor(Color.BLACK);
         score_label.setAlignment(Align.center);
 
         Image high_score_image = new Image(AssetLoader.textureAtlas.findRegion("crown"));
-        high_score_label = new TextraLabel(BaseGame.high_score + "s", AssetLoader.getLabelStyle("Play-Bold20white"));
+        high_score_label = new TextraLabel(BaseGame.high_score + "s", AssetLoader.getLabelStyle("Alegreya40white"));
         high_score_label.getFont().scale(label_scale);
         high_score_label.setColor(Color.BLACK);
         high_score_label.setAlignment(Align.center);
@@ -534,6 +534,7 @@ public class LevelScreen extends BaseScreen {
             .width(Gdx.graphics.getWidth() * 0.05f)
             .height(Gdx.graphics.getHeight() * 0.05f)
             .padRight(Gdx.graphics.getWidth() * 0.01f)
+            .padTop(Gdx.graphics.getHeight() * 0.01f)
         ;
 
         temp.add(score_label)
@@ -561,6 +562,7 @@ public class LevelScreen extends BaseScreen {
             .height(Gdx.graphics.getHeight() * 0.05f)
             .padRight(Gdx.graphics.getWidth() * 0.01f)
             .padLeft(Gdx.graphics.getWidth() * 0.02f)
+            .padTop(Gdx.graphics.getHeight() * 0.01f)
         ;
 
         temp.add(high_score_label)

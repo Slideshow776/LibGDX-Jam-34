@@ -2,6 +2,7 @@ package no.sandramoen.libgdx34.actors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 
 import no.sandramoen.libgdx34.utils.AssetLoader;
 import no.sandramoen.libgdx34.utils.BaseActor;
@@ -28,8 +30,10 @@ public class CellGUI extends BaseActor {
     private SequenceAction wobbleAction; // reference to the current wobble
     private String letter;
     private Color key_colour = Color.WHITE;
-    private Color player_colour = Color.GREEN;
-    private Color goal_colour = Color.YELLOW;
+    private Color player_colour = Color.WHITE;
+    //private Color player_colour = new Color(0xebadffFF);
+    //private Color player_colour = new Color(0x9f5fb5FF);
+    private Color goal_colour = Color.WHITE;
     private Color default_colour = Color.BLACK;
 
     private TextureRegion backgroundRegion;
@@ -178,6 +182,7 @@ public class CellGUI extends BaseActor {
         if (isKey) {
             is_key = true;
             is_player = false;
+            setColor(Color.WHITE);
             this.key_colour = new Color(key_colour.r, key_colour.g, key_colour.b, 1.0f);
         } else {
             is_key = false;
@@ -186,12 +191,25 @@ public class CellGUI extends BaseActor {
 
 
     private void setFont(Font font) {
-        if (font == Font.METAL_MANIA)
-            loadImage("fonts/metal mania/" + letter.toLowerCase());
-        else if (font == Font.ALEGREYA)
-            loadImage("fonts/alegreya/" + letter.toLowerCase());
-        else if (font == Font.BOWLBY)
+        if (font == Font.METAL_MANIA) {
+            Array<TextureRegion> images = new Array<>();
+            images.add(AssetLoader.textureAtlas.findRegion("fonts/metal mania/" + letter.toLowerCase() + "0"));
+            images.add(AssetLoader.textureAtlas.findRegion("fonts/metal mania/" + letter.toLowerCase() + "1"));
+            images.add(AssetLoader.textureAtlas.findRegion("fonts/metal mania/" + letter.toLowerCase() + "2"));
+            images.shuffle();
+            Animation<TextureRegion> animation = new Animation<>(MathUtils.random(0.1f, 0.2f), images, Animation.PlayMode.LOOP);
+            setAnimation(animation);
+        } else if (font == Font.ALEGREYA) {
+            Array<TextureRegion> images = new Array<>();
+            images.add(AssetLoader.textureAtlas.findRegion("fonts/alegreya/" + letter.toLowerCase() + "0"));
+            images.add(AssetLoader.textureAtlas.findRegion("fonts/alegreya/" + letter.toLowerCase() + "1"));
+            images.add(AssetLoader.textureAtlas.findRegion("fonts/alegreya/" + letter.toLowerCase() + "2"));
+            images.shuffle();
+            Animation<TextureRegion> animation = new Animation<>(MathUtils.random(0.3f, 0.4f), images, Animation.PlayMode.LOOP);
+            setAnimation(animation);
+        } else if (font == Font.BOWLBY) {
             loadImage("fonts/bowlby/" + letter.toLowerCase());
+        }
 
         setSize(CELL_SIZE, CELL_SIZE);
         setOrigin(Align.center);

@@ -1,5 +1,23 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	Alegreya20white: {
+		file: Alegreya20white.fnt
+		scaledSize: 1
+		markupEnabled: false
+		flip: false
+	}
+	Alegreya40white: {
+		file: Alegreya40white.fnt
+		scaledSize: 1
+		markupEnabled: false
+		flip: false
+	}
+	Alegreya59white: {
+		file: Alegreya59white.fnt
+		scaledSize: 1
+		markupEnabled: false
+		flip: false
+	}
 	Play-Bold20white: {
 		file: Play-Bold20white.fnt
 		scaledSize: 1
@@ -132,7 +150,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
-		font: Play-Bold40white
+		font: Alegreya20white
 		fontColor: black
 	}
 }
