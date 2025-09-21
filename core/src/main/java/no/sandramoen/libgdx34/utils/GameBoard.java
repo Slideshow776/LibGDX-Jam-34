@@ -1,12 +1,8 @@
 package no.sandramoen.libgdx34.utils;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.TimeUtils;
-
-import java.util.Random;
 
 public class GameBoard {
     public Array<Array<Cell>> rows;
@@ -24,9 +20,8 @@ public class GameBoard {
 
         rows = new Array<>();
         generateGrid();
-        placePlayerAndGoalRandomly();
-        placeRandomKey();
-
+        placePlayerKeyAndGoalRandomly();
+        
         if (IS_PRINT) {
             printBoard();
         }
@@ -64,12 +59,13 @@ public class GameBoard {
     }
 
 
-    private void placePlayerAndGoalRandomly() {
+    private void placePlayerKeyAndGoalRandomly() {
         // 1️⃣ Clear previous player and goal
         for (Array<Cell> row : rows) {
             for (Cell cell : row) {
                 cell.is_player_here = false;
                 cell.is_goal_here = false;
+                cell.is_key_here = false;
             }
         }
 
@@ -81,19 +77,27 @@ public class GameBoard {
         // 3️⃣ Pick a random neighbor for the goal
         Array<int[]> neighbors = getNeighbors(this.playerRow, this.playerCol);
         if (neighbors.size > 0) {
-            int[] goalPos = neighbors.get(random.nextInt(neighbors.size));
-            rows.get(goalPos[0]).get(goalPos[1]).is_goal_here = true;
+            int[] keyPos = neighbors.get(random.nextInt(neighbors.size));
+            rows.get(keyPos[0]).get(keyPos[1]).is_key_here = true;
         } else {
             // Fallback; this was previously placing the goal at the player! Bad robot!
-            rows.get(this.playerRow).get(this.playerCol).is_goal_here = false;
-            int goalX, goalY;
+            rows.get(this.playerRow).get(this.playerCol).is_key_here = false;
+            int keyX, keyY;
             do {
-                goalX = random.nextInt(rows.size);
-                goalY = random.nextInt(rows.get(goalX).size);
-            } while (rows.get(goalX).get(goalY).is_player_here);
+                keyX = random.nextInt(rows.size);
+                keyY = random.nextInt(rows.get(keyX).size);
+            } while (rows.get(keyX).get(keyY).is_player_here);
 
-            rows.get(goalX).get(goalY).is_goal_here = true;
+            rows.get(keyX).get(keyY).is_key_here = true;
         }
+        int goalX, goalY;
+        do {
+            goalX = random.nextInt(rows.size);
+            goalY = random.nextInt(rows.get(goalX).size);
+        } while (rows.get(goalX).get(goalY).is_player_here || rows.get(goalX).get(goalY).is_key_here);
+
+        rows.get(goalX).get(goalY).is_goal_here = true;
+
     }
 
 
