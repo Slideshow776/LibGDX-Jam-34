@@ -17,6 +17,7 @@ import no.sandramoen.libgdx34.actors.Background;
 import no.sandramoen.libgdx34.actors.CellGUI;
 import no.sandramoen.libgdx34.actors.Enemy;
 import no.sandramoen.libgdx34.actors.Overlay;
+import no.sandramoen.libgdx34.actors.particles.EffectKeyBurst;
 import no.sandramoen.libgdx34.screens.shell.MenuScreen;
 import no.sandramoen.libgdx34.utils.AssetLoader;
 import no.sandramoen.libgdx34.utils.BaseActor;
@@ -133,7 +134,35 @@ public class LevelScreen extends BaseScreen {
         } else if (!is_game_over) {
             char typed = keycodeToChar(keycode);
             if (typed != 0) {
-                if (!game_board.movePlayerIfMatch(typed, has_current_key)) { // wrong letter was typed
+                boolean moved = game_board.movePlayerIfMatch(typed, has_current_key);
+
+                if (!moved) {
+                    // 🔎 Check if we were blocked by a locked goal
+                    for (int[] n : game_board.getNeighbors(game_board.playerRow, game_board.playerCol)) {
+                        Cell neighbor = game_board.rows.get(n[0]).get(n[1]);
+                        if (neighbor.letter.equalsIgnoreCase(String.valueOf(typed))
+                            && neighbor.is_goal_here
+                            && !has_current_key) {
+
+                            // 💥 Spawn effect at the key's position
+                            for (int r = 0; r < game_board.rows.size; r++) {
+                                for (int c = 0; c < game_board.rows.get(r).size; c++) {
+                                    Cell cell = game_board.rows.get(r).get(c);
+                                    if (cell.is_key_here) {
+                                        CellGUI keyGui = cell_guis.get(r).get(c);
+                                        EffectKeyBurst effect = new EffectKeyBurst();
+                                        effect.centerAtActor(keyGui); // position effect on key cell
+                                        effect.setScale(0.01f);
+                                        mainStage.addActor(effect);   // add to stage so it renders
+                                        effect.start();               // play effect
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ❌ Wrong letter feedback
                     for (int r = 0; r < game_board.rows.size; r++) {
                         Array<Cell> row = game_board.rows.get(r);
                         Array<CellGUI> guiRow = cell_guis.get(r);
@@ -144,7 +173,8 @@ public class LevelScreen extends BaseScreen {
                                 guiRow.get(c).showError();
                         }
                     }
-                } else { // correct letter was typed
+                } else {
+                    // ✅ Correct letter - move player and handle normal gameplay
                     if (!is_game_started)
                         AssetLoader.game_start_sound.play(BaseGame.soundVolume * 0.25f);
                     is_game_started = true;
@@ -156,7 +186,6 @@ public class LevelScreen extends BaseScreen {
                         updateKeyImages();
                     }
 
-                    //AssetLoader.locked_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
                     boolean is_new_letters = false;
                     if (game_board.checkPlayerReachedGoalAndShuffle() && has_current_key) {
                         is_new_letters = true;

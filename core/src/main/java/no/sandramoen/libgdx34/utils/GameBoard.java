@@ -21,7 +21,7 @@ public class GameBoard {
         rows = new Array<>();
         generateGrid();
         placePlayerKeyAndGoalRandomly();
-        
+
         if (IS_PRINT) {
             printBoard();
         }
