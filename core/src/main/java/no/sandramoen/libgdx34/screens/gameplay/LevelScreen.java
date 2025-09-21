@@ -137,6 +137,7 @@ public class LevelScreen extends BaseScreen {
                 boolean moved = game_board.movePlayerIfMatch(typed, has_current_key);
 
                 if (!moved) {
+                    boolean letterExists = false;
                     // 🔎 Check if we were blocked by a locked goal
                     for (int[] n : game_board.getNeighbors(game_board.playerRow, game_board.playerCol)) {
                         Cell neighbor = game_board.rows.get(n[0]).get(n[1]);
@@ -162,21 +163,27 @@ public class LevelScreen extends BaseScreen {
                         }
                     }
 
-                    // ❌ Wrong letter feedback
                     for (int r = 0; r < game_board.rows.size; r++) {
                         Array<Cell> row = game_board.rows.get(r);
                         Array<CellGUI> guiRow = cell_guis.get(r);
 
                         for (int c = 0; c < row.size; c++) {
                             Cell cell = row.get(c);
-                            if (cell.letter.equalsIgnoreCase(String.valueOf(typed)))
+                            if (cell.letter.equalsIgnoreCase(String.valueOf(typed))) {
+                                letterExists = true;
                                 guiRow.get(c).showError();
+                            }
                         }
+                    }
+
+                    // 🔊 Play error sound if letter doesn't exist anywhere
+                    if (!letterExists) {
+                        AssetLoader.error_sound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
                     }
                 } else {
                     // ✅ Correct letter - move player and handle normal gameplay
                     if (!is_game_started)
-                        AssetLoader.game_start_sound.play(BaseGame.soundVolume * 0.25f);
+                        AssetLoader.game_start_sound.play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.6f, 0.7f), 0f);
                     is_game_started = true;
 
                     if (game_board.checkIfKey()) {

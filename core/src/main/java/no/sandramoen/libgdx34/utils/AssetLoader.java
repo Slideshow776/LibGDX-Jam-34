@@ -74,8 +74,8 @@ public class AssetLoader implements AssetErrorListener {
         BaseGame.assetManager.load("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/613290__birdofthenorth__bassy-thud.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/675771__craigsmith__s31-08-acetylene-torch-multiple-pops.wav", Sound.class);
-        BaseGame.assetManager.load("audio/sounds/615457__melokacool__game-over-3.wav", Sound.class);
-        BaseGame.assetManager.load("audio/sounds/669792__melokacool__alarm-1.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/554655__hmtsccsound__bec-low-bell-solo.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/259278__akke-h__church-bell-fischerhude-short.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/634948__discordantscraps__keychain.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/391724__jpolito__jp_circuitbox_locked01.wav", Sound.class);
         BaseGame.assetManager.load("audio/sounds/455324__rambler52__heavy-door-creaking_05.wav", Sound.class);
@@ -112,8 +112,8 @@ public class AssetLoader implements AssetErrorListener {
         new_letters_sound = BaseGame.assetManager.get("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
         move_sound = BaseGame.assetManager.get("audio/sounds/613290__birdofthenorth__bassy-thud.wav", Sound.class);
         error_sound = BaseGame.assetManager.get("audio/sounds/675771__craigsmith__s31-08-acetylene-torch-multiple-pops.wav", Sound.class);
-        game_over_sound = BaseGame.assetManager.get("audio/sounds/615457__melokacool__game-over-3.wav", Sound.class);
-        game_start_sound = BaseGame.assetManager.get("audio/sounds/669792__melokacool__alarm-1.wav", Sound.class);
+        game_over_sound = BaseGame.assetManager.get("audio/sounds/554655__hmtsccsound__bec-low-bell-solo.wav", Sound.class);
+        game_start_sound = BaseGame.assetManager.get("audio/sounds/259278__akke-h__church-bell-fischerhude-short.wav", Sound.class);
         key_sound = BaseGame.assetManager.get("audio/sounds/634948__discordantscraps__keychain.wav", Sound.class);
         locked_sound = BaseGame.assetManager.get("audio/sounds/391724__jpolito__jp_circuitbox_locked01.wav", Sound.class);
         door_open_sound = BaseGame.assetManager.get("audio/sounds/455324__rambler52__heavy-door-creaking_05.wav", Sound.class);
